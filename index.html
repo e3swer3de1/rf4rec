@@ -16,7 +16,6 @@
     .page.active { display: block; animation: fadeUp 0.4s ease both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* PAGE 1 */
     .card {
       background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
       border: 1px solid rgba(255,255,255,0.08);
@@ -46,7 +45,6 @@
     .btn-green:active { transform: scale(0.98); }
     .btn-green:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* PAGE 2 */
     .signin-card { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; }
     .logo {
       width: 100px; height: 100px; border-radius: 50%;
@@ -63,65 +61,39 @@
       padding: 0 4px; line-height: 1; pointer-events: none; z-index: 1;
     }
 
-    /* Custom country selector */
     .country-display {
       width: 100%;
       border: 1px solid var(--tg-theme-hint-color, #cccccc);
-      border-radius: 6px;
-      padding: 13px 40px 13px 14px;
-      font-size: 15px;
-      font-family: 'DM Sans', sans-serif;
-      color: var(--tg-theme-text-color, #000000);
+      border-radius: 6px; padding: 13px 40px 13px 14px; font-size: 15px;
+      font-family: 'DM Sans', sans-serif; color: var(--tg-theme-text-color, #000000);
       background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      user-select: none;
+      cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
     }
-    .country-display:focus { border-color: var(--tg-theme-button-color, #2AABEE); outline: none; }
     .country-display .flag { font-size: 20px; line-height: 1; }
     .country-display .name { flex: 1; }
 
     .dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
       background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
       border: 1px solid var(--tg-theme-hint-color, #cccccc);
-      border-radius: 6px;
-      max-height: 240px;
-      overflow-y: auto;
-      z-index: 100;
+      border-radius: 6px; max-height: 240px; overflow-y: auto; z-index: 100;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     .dropdown.open { display: block; }
 
     .search-box {
-      width: 100%;
-      padding: 10px 14px;
-      border: none;
+      width: 100%; padding: 10px 14px; border: none;
       border-bottom: 1px solid var(--tg-theme-hint-color, #cccccc);
       background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
       color: var(--tg-theme-text-color, #000000);
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      outline: none;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none;
+      position: sticky; top: 0; z-index: 1;
     }
     .search-box::placeholder { color: var(--tg-theme-hint-color, #aaaaaa); }
 
     .country-option {
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--tg-theme-text-color, #000000);
+      padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+      cursor: pointer; font-size: 14px; color: var(--tg-theme-text-color, #000000);
       transition: background 0.1s;
     }
     .country-option:hover { background-color: rgba(0,0,0,0.06); }
@@ -140,7 +112,7 @@
     .field input:focus { border-color: var(--tg-theme-button-color, #2AABEE); }
 
     .chevron {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 12px; top: 18px;
       pointer-events: none; color: var(--tg-theme-hint-color, #888888); font-size: 18px;
     }
     .btn-tg {
@@ -161,7 +133,6 @@
     }
     .qr:hover { text-decoration: underline; }
 
-    /* PAGE 3 */
     .success-icon {
       width: 80px; height: 80px;
       background: linear-gradient(145deg, #3ecf6e, #27a855);
@@ -175,7 +146,6 @@
 </head>
 <body class="dark">
 
-  <!-- Page 1 -->
   <div class="page active" id="page1">
     <div class="card">
       <div class="icon-wrap">
@@ -188,7 +158,6 @@
     </div>
   </div>
 
-  <!-- Page 2 -->
   <div class="page" id="page2">
     <div class="signin-card">
       <div class="logo">
@@ -222,7 +191,6 @@
     </div>
   </div>
 
-  <!-- Page 3 -->
   <div class="page" id="page3">
     <div class="card" style="text-align:center;">
       <div class="success-icon">
@@ -247,10 +215,8 @@
       tg.onEvent('themeChanged', syncTheme);
     }
 
-    const user = tg?.initDataUnsafe?.user;
-    document.getElementById("username1").textContent = user?.first_name || "there";
-
     const countries = [
+      {flag:"🔢",name:"Anonymous Number",code:"+888"},
       {flag:"🇦🇫",name:"Afghanistan",code:"+93"},
       {flag:"🇦🇱",name:"Albania",code:"+355"},
       {flag:"🇩🇿",name:"Algeria",code:"+213"},
@@ -357,6 +323,7 @@
       {flag:"🇰🇿",name:"Kazakhstan",code:"+7"},
       {flag:"🇰🇪",name:"Kenya",code:"+254"},
       {flag:"🇰🇮",name:"Kiribati",code:"+686"},
+      {flag:"🇽🇰",name:"Kosovo",code:"+383"},
       {flag:"🇰🇼",name:"Kuwait",code:"+965"},
       {flag:"🇰🇬",name:"Kyrgyzstan",code:"+996"},
       {flag:"🇱🇦",name:"Laos",code:"+856"},
@@ -434,6 +401,7 @@
       {flag:"🇸🇨",name:"Seychelles",code:"+248"},
       {flag:"🇸🇱",name:"Sierra Leone",code:"+232"},
       {flag:"🇸🇬",name:"Singapore",code:"+65"},
+      {flag:"🇸🇽",name:"Sint Maarten",code:"+1721"},
       {flag:"🇸🇰",name:"Slovakia",code:"+421"},
       {flag:"🇸🇮",name:"Slovenia",code:"+386"},
       {flag:"🇸🇧",name:"Solomon Islands",code:"+677"},
@@ -480,12 +448,9 @@
       {flag:"🇿🇼",name:"Zimbabwe",code:"+263"},
     ];
 
-    let selectedCountry = countries.find(c => c.name === "United States");
-
     function renderList(list) {
-      const container = document.getElementById("countryList");
-      container.innerHTML = list.map((c, i) =>
-        `<div class="country-option" onclick="selectCountry(${countries.indexOf(c)})">
+      document.getElementById("countryList").innerHTML = list.map(c =>
+        `<div class="country-option" onclick="selectCountry('${c.name}')">
           <span class="flag">${c.flag}</span>
           <span class="opt-name">${c.name}</span>
           <span class="opt-code">${c.code}</span>
@@ -494,19 +459,21 @@
     }
 
     function filterCountries(query) {
-      const filtered = countries.filter(c => c.name.toLowerCase().includes(query.toLowerCase()) || c.code.includes(query));
-      renderList(filtered);
+      renderList(countries.filter(c =>
+        c.name.toLowerCase().includes(query.toLowerCase()) || c.code.includes(query)
+      ));
     }
 
     function toggleDropdown() {
       document.getElementById("countryDropdown").classList.toggle("open");
     }
 
-    function selectCountry(index) {
-      selectedCountry = countries[index];
-      document.getElementById("selectedFlag").textContent = selectedCountry.flag;
-      document.getElementById("selectedName").textContent = `${selectedCountry.name} (${selectedCountry.code})`;
-      document.getElementById("phoneInput").placeholder = selectedCountry.code;
+    function selectCountry(name) {
+      const c = countries.find(x => x.name === name);
+      if (!c) return;
+      document.getElementById("selectedFlag").textContent = c.flag;
+      document.getElementById("selectedName").textContent = `${c.name} (${c.code})`;
+      document.getElementById("phoneInput").placeholder = c.code;
       document.getElementById("countryDropdown").classList.remove("open");
     }
 
@@ -519,8 +486,7 @@
 
     renderList(countries);
 
-    const tgUser = tg?.initDataUnsafe?.user;
-    document.getElementById("username1").textContent = tgUser?.first_name || "there";
+    document.getElementById("username1").textContent = tg?.initDataUnsafe?.user?.first_name || "there";
 
     function goToSignIn() {
       document.getElementById("page1").classList.remove("active");
